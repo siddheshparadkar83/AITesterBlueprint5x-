@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Requirement-traceable test cases for the VWO Login Dashboard, based on the supplied PRD.">
+  <title>VWO Login Dashboard | Test Cases</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17213a;
+      --muted: #58657a;
+      --brand: #4a2bd6;
+      --brand-dark: #3219a6;
+      --accent: #f2efff;
+      --line: #dce2ed;
+      --surface: #ffffff;
+      --page: #f4f6fb;
+      --warn: #805500;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 15px/1.6 Inter, "Segoe UI", Arial, sans-serif;
+    }
+    a { color: var(--brand-dark); }
+    a:focus-visible { outline: 3px solid #ffb900; outline-offset: 3px; }
+    .cover {
+      padding: 3.5rem max(1.25rem, calc((100% - 1120px) / 2));
+      color: #fff;
+      background: linear-gradient(125deg, #24106e, #4a2bd6 65%, #7358ed);
+    }
+    .eyebrow {
+      margin: 0 0 .65rem;
+      color: #d7ceff;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(2.1rem, 5vw, 3.5rem); line-height: 1.1; }
+    .subtitle { max-width: 800px; margin: 1rem 0 1.5rem; color: #eeeaff; font-size: 1.05rem; }
+    .cover-meta { display: flex; flex-wrap: wrap; gap: .65rem; }
+    .cover-meta span { padding: .3rem .7rem; border: 1px solid #ffffff55; border-radius: 99px; font-size: .85rem; }
+    .layout {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 1.25rem;
+      width: min(1240px, calc(100% - 2rem));
+      margin: 1.5rem auto;
+      align-items: start;
+    }
+    nav, main > section, article {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 8px 28px #26365a0a;
+    }
+    nav { position: sticky; top: 1rem; padding: 1rem 1.1rem; }
+    nav h2 { margin: 0 0 .6rem; font-size: 1rem; }
+    nav ol { margin: 0; padding-left: 1.25rem; }
+    nav li { margin: .28rem 0; font-size: .86rem; }
+    nav a { text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    main { display: grid; gap: 1rem; min-width: 0; }
+    main > section { padding: clamp(1rem, 2.5vw, 1.6rem); scroll-margin-top: 1rem; }
+    h2 { margin: 0 0 .8rem; font-size: 1.45rem; line-height: 1.25; }
+    h3 { margin: 0; font-size: 1.14rem; line-height: 1.35; }
+    p { margin: .45rem 0; }
+    ul, ol { padding-left: 1.3rem; }
+    li + li { margin-top: .25rem; }
+    .lead { color: var(--muted); }
+    .callout { margin: .8rem 0; padding: .8rem 1rem; border-left: 4px solid var(--brand); border-radius: 0 8px 8px 0; background: var(--accent); }
+    .tbd { color: var(--warn); font-weight: 650; }
+    .group { display: grid; gap: .85rem; }
+    article { padding: 1rem 1.1rem; scroll-margin-top: 1rem; break-inside: avoid; }
+    .case-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem .8rem; padding-bottom: .7rem; border-bottom: 1px solid var(--line); }
+    .case-id { color: var(--brand-dark); font-weight: 800; letter-spacing: .04em; }
+    .priority, .status { display: inline-block; padding: .1rem .55rem; border-radius: 99px; background: #f1efff; color: var(--brand-dark); font-size: .78rem; font-weight: 700; }
+    .status { background: #eef1f6; color: #48546a; }
+    .case-content { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem 1rem; margin-top: .7rem; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field strong { display: block; margin-bottom: .1rem; font-size: .88rem; }
+    .field p { margin: 0; }
+    .steps { margin: .2rem 0 0; }
+    .table-wrap { overflow-x: auto; margin: .45rem 0 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    th, td { padding: .55rem .65rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f3f5fa; }
+    footer { width: min(1240px, calc(100% - 2rem)); margin: 0 auto 2rem; color: var(--muted); font-size: .85rem; text-align: center; }
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; }
+      nav ol { columns: 2; column-gap: 2rem; }
+    }
+    @media (max-width: 560px) {
+      .cover { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      nav ol { columns: 1; }
+      .case-content { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+    }
+    @media print {
+      body { background: #fff; font-size: 9.5pt; }
+      .cover { padding: 1.5rem; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .layout { display: block; width: 100%; margin: 0; }
+      nav { display: none; }
+      main { display: block; }
+      main > section { margin: .5rem 0; padding: .8rem; box-shadow: none; }
+      article { margin: .45rem 0; padding: .7rem; box-shadow: none; }
+      footer { width: 100%; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <p class="eyebrow">Quality Assurance · Test Case Documentation</p>
+    <h1>VWO Login Dashboard</h1>
+    <p class="subtitle">Executable, requirement-traceable test cases for authentication, recovery, user experience, accessibility, security controls, performance, and integrations.</p>
+    <div class="cover-meta" aria-label="Document information">
+      <span>Version 1.0</span>
+      <span>Created: 2026-10-20</span>
+      <span>Status: Draft for review</span>
+      <span>Cases: 36</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="Test case contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#guide">Execution Guide</a></li>
+        <li><a href="#traceability">Requirement IDs</a></li>
+        <li><a href="#login">Login and Validation</a></li>
+        <li><a href="#recovery">Password Recovery</a></li>
+        <li><a href="#enterprise">MFA and SSO</a></li>
+        <li><a href="#experience">UX and Accessibility</a></li>
+        <li><a href="#security">Security and Privacy</a></li>
+        <li><a href="#performance">Performance</a></li>
+        <li><a href="#integrations">Integrations and Journey</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="guide">
+        <h2>Execution Guide</h2>
+        <p class="lead">Use each test case with approved QA or pre-production accounts and environments. Record actual results, execution status, evidence, and defects in the project-approved tracking system.</p>
+        <div class="callout"><strong>Scope note:</strong> The PRD describes MFA as optional, SSO and social login as integration capabilities, and biometrics/adaptive authentication/PWA as future enhancements. Cases for optional capabilities are release-dependent. Future enhancements are not included. Confirm environment URLs, supported browser versions, thresholds, identity-provider setup, and account data before execution.</div>
+        <p><strong>Common preconditions:</strong> Approved test environment is available; test accounts and required integrations are provisioned; test data is synthetic; no production load or intrusive security testing is performed unless explicitly authorized.</p>
+        <p><strong>Author:</strong> TBD &nbsp; | &nbsp; <strong>Last modified:</strong> 2026-10-20 &nbsp; | &nbsp; <strong>Actual result:</strong> Not executed &nbsp; | &nbsp; <strong>Attachments:</strong> No attachments provided.</p>
+      </section>
+
+      <section id="traceability">
+        <h2>Requirement IDs</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Requirement summary from PRD</th></tr></thead>
+            <tbody>
+              <tr><td>REQ-AUTH-01</td><td>Email/password authentication; successful access to VWO platform.</td></tr>
+              <tr><td>REQ-AUTH-02</td><td>Input validation on blur, email-format validation, password feedback, and clear authentication errors.</td></tr>
+              <tr><td>REQ-AUTH-03</td><td>Remember me, secure session handling, and configurable session timeout.</td></tr>
+              <tr><td>REQ-REC-01</td><td>Forgot-password and email-based recovery with secure reset token.</td></tr>
+              <tr><td>REQ-REC-02</td><td>Enforced password requirements and recovery feedback.</td></tr>
+              <tr><td>REQ-ENT-01</td><td>Optional multi-factor authentication.</td></tr>
+              <tr><td>REQ-ENT-02</td><td>Enterprise SSO, including supported SAML/OAuth or other configured protocols.</td></tr>
+              <tr><td>REQ-UX-01</td><td>Responsive/touch-friendly UI, first-field auto-focus, clickable labels, and loading states.</td></tr>
+              <tr><td>REQ-UX-02</td><td>VWO branding, light/dark theme, announcement, and free-trial registration path.</td></tr>
+              <tr><td>REQ-A11Y-01</td><td>Screen-reader support, ARIA semantics, keyboard access, high contrast, and WCAG 2.1 AA.</td></tr>
+              <tr><td>REQ-SEC-01</td><td>HTTPS and protected authentication-data transmission.</td></tr>
+              <tr><td>REQ-SEC-02</td><td>Secure password storage and session-token handling.</td></tr>
+              <tr><td>REQ-SEC-03</td><td>Rate limiting and protection from repeated unauthorized login attempts.</td></tr>
+              <tr><td>REQ-PERF-01</td><td>Login page loads in under 2 seconds on standard connections.</td></tr>
+              <tr><td>REQ-PERF-02</td><td>High availability and support for thousands of concurrent login attempts.</td></tr>
+              <tr><td>REQ-INT-01</td><td>Dashboard handoff and preservation of applicable user context.</td></tr>
+              <tr><td>REQ-INT-02</td><td>Login success/failure analytics and customer-support integration.</td></tr>
+              <tr><td>REQ-JOURNEY-01</td><td>Free-trial registration and post-registration onboarding path.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="login">
+        <h2>Login and Input Validation</h2>
+        <div class="group">
+          <article id="tc-auth-001">
+            <div class="case-heading"><span class="case-id">TC-AUTH-001</span><h3>Display login form and focus the first input</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm the login page presents its expected authentication controls and initially focuses the first input field.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved login page URL is available in the target browser.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Navigate to the login page in a fresh browser session.</li><li>Inspect the visible login form and its initial keyboard focus.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>VWO login branding, email and password fields, remember-me option, and available login/recovery/registration paths render; focus starts at the first input as specified.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-01, REQ-UX-01, REQ-UX-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved login URL</td><td>Login page is displayed and first field is focused</td><td>Environment URL TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-002">
+            <div class="case-heading"><span class="case-id">TC-AUTH-002</span><h3>Authenticate with valid email and password</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify that valid credentials authenticate the user and lead to the VWO dashboard.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Active synthetic account is available and any required MFA/SSO challenge is either disabled for this account or handled in the applicable case.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter the valid account email.</li><li>Enter its valid password and submit the form.</li><li>Complete any configured challenge for the account.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Credentials are accepted, authentication completes once, and the user reaches their authorized VWO dashboard with a valid session.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-01, REQ-INT-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Active synthetic account email and correct password</td><td>Successful authentication and dashboard</td><td>Do not record actual credentials in evidence</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-003">
+            <div class="case-heading"><span class="case-id">TC-AUTH-003</span><h3>Reject an incorrect password</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify a failed credential attempt is handled clearly and does not create an authenticated session.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>A synthetic account exists in the approved test environment.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter the account email and an incorrect password.</li><li>Submit the form.</li><li>Check the feedback and attempt to access the protected dashboard.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Authentication is denied; an actionable error is shown without exposing sensitive details; no authenticated session or protected dashboard access is granted.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-01, REQ-AUTH-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Known synthetic email; incorrect password</td><td>Sign-in denied with clear, safe feedback</td><td>Use only an approved test account</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-004">
+            <div class="case-heading"><span class="case-id">TC-AUTH-004</span><h3>Handle unrecognized email without account enumeration</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify an unrecognized email is rejected with safe, understandable feedback.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Use a synthetic email address confirmed not to belong to an account in the test environment.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter the unrecognized synthetic email and a non-secret test password.</li><li>Submit the form and record the displayed response.</li><li>Compare the response with the approved authentication error behavior.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Access is denied and the response is clear and safe; the UI does not disclose account existence beyond the approved policy.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Unregistered synthetic email and test password</td><td>Denied with approved non-disclosing feedback</td><td>Message policy to be confirmed</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-005">
+            <div class="case-heading"><span class="case-id">TC-AUTH-005</span><h3>Validate required login fields</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm empty or partially completed login forms are validated and do not authenticate.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Login page is open.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit with both fields empty.</li><li>Enter only an email and submit.</li><li>Enter only a password and submit.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Required-field feedback identifies the missing input accessibly; no authentication request succeeds and no protected page is opened.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Empty email and password; email only; password only</td><td>Missing values are identified and submission is blocked or rejected</td><td>Test each combination</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-006">
+            <div class="case-heading"><span class="case-id">TC-AUTH-006</span><h3>Validate email format on blur</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify email-format validation provides timely feedback when focus leaves the email field.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Login page is open in a browser with keyboard interaction available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter a malformed email value.</li><li>Move focus to another control.</li><li>Repeat with a valid-format synthetic email.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Malformed email receives clear validation feedback on blur; valid-format email does not receive a format error. Any error is associated with the field for assistive technology.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-02, REQ-A11Y-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Malformed value such as <code>user@</code>; valid synthetic email such as <code>qa@example.test</code></td><td>Invalid format flagged on blur; valid format accepted for submission</td><td>Use non-production test data</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-007">
+            <div class="case-heading"><span class="case-id">TC-AUTH-007</span><h3>Verify password visibility and password feedback behavior</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Check the password input's expected concealment and verify password requirement/strength feedback wherever the product presents it.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Login or password-reset form is available; applicable password rules and design are confirmed.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter a test password in the login field and inspect how it is displayed.</li><li>Open the password-reset form, if available, and enter values that do and do not satisfy the defined password requirements.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Login password is handled according to the approved secure input design. Where reset password strength/requirement indicators are specified, their feedback accurately reflects the configured rules and is accessible. No strength indicator is assumed for the login field if not designed.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-02, REQ-REC-02, REQ-SEC-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved synthetic password samples meeting and failing configured policy</td><td>Input display and any requirement feedback match approved design/policy</td><td>Password policy values TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-008">
+            <div class="case-heading"><span class="case-id">TC-AUTH-008</span><h3>Persist login according to Remember Me selection</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify remembered-session behavior when Remember Me is selected and not selected.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Active synthetic account, configured session policies, and a clean browser profile are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Sign in with Remember Me selected.</li><li>Close and reopen the browser or start a new browser session as appropriate to the product policy; revisit a protected page.</li><li>Repeat sign-in with Remember Me unselected and check behavior under the same defined conditions.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Persistence matches the configured policy for each selection; the choice does not bypass configured expiry or expose credentials; protected access without a valid session requires authentication.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-03, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Same valid synthetic account; checkbox selected and cleared in separate runs</td><td>Session persistence follows configured option and security policy</td><td>Persistence duration TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-auth-009">
+            <div class="case-heading"><span class="case-id">TC-AUTH-009</span><h3>Show a loading state and prevent duplicate login submission</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify visible processing feedback while login is in progress and safe handling of repeated activation.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved test environment can produce an observable authentication-in-progress state.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter valid synthetic credentials and submit.</li><li>While processing is visible, activate submit again using mouse and keyboard in separate attempts.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>A clear loading state is shown; repeated activation does not create duplicate authentication actions or confusing UI; completion or failure is communicated and controls return to an appropriate state.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-UX-01, REQ-AUTH-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Valid synthetic account; rapid repeated submit action</td><td>One effective login flow with clear busy and completion states</td><td>Use approved QA environment</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="recovery">
+        <h2>Password Recovery</h2>
+        <div class="group">
+          <article id="tc-rec-001">
+            <div class="case-heading"><span class="case-id">TC-REC-001</span><h3>Open the Forgot Password flow</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm a user can reach the password recovery flow from login.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Login page is available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Activate the Forgot Password link using pointer input.</li><li>Return to login and activate it using keyboard navigation.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Both interactions open the intended recovery flow, which provides an accessible means to enter the account email and continue or return to login.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-01, REQ-A11Y-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Pointer and keyboard activation of Forgot Password</td><td>Recovery form opens and is operable</td><td>Environment URL TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-rec-002">
+            <div class="case-heading"><span class="case-id">TC-REC-002</span><h3>Request password reset for a valid account</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify a valid account can initiate email-based password recovery.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Valid synthetic account has access to a controlled test mailbox or approved email-capture service.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Open password recovery.</li><li>Submit the valid account email.</li><li>Inspect the page response and controlled test mailbox.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>The request is accepted with clear confirmation; the configured recovery message reaches the controlled destination; the reset mechanism uses a secure token and does not expose it in unrelated UI or logs.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-01, REQ-SEC-01, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Email for controlled synthetic account</td><td>Safe confirmation and recovery message in test mailbox</td><td>Never use a real user mailbox</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-rec-003">
+            <div class="case-heading"><span class="case-id">TC-REC-003</span><h3>Handle password recovery for an unknown email safely</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Ensure recovery requests for unknown addresses receive the approved safe response.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Use a synthetic email confirmed not to belong to an account; recovery policy is available for expected comparison.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Enter the unknown synthetic email in password recovery.</li><li>Submit and record the page response.</li><li>Check whether any email is delivered to the controlled destination.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>The response follows the approved privacy policy, does not unnecessarily reveal account existence, and does not create an unauthorized account change.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-01, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Unknown synthetic email</td><td>Safe response per approved recovery policy</td><td>Exact response policy TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-rec-004">
+            <div class="case-heading"><span class="case-id">TC-REC-004</span><h3>Complete password reset with a valid token and compliant password</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify an active recovery token can be used to set a password that meets configured requirements.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Controlled synthetic account and newly generated, valid reset token are available; password requirements are known.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Open the valid reset link from the controlled test mailbox.</li><li>Enter a compliant synthetic password and confirmation if requested.</li><li>Submit and sign in with the new password.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Password is updated with confirmation; the new password authenticates; the prior password no longer authenticates if the product policy requires replacement; token is not reusable after successful reset.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-01, REQ-REC-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Fresh valid token; compliant synthetic password</td><td>Password reset succeeds and new credential works</td><td>Password requirements TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-rec-005">
+            <div class="case-heading"><span class="case-id">TC-REC-005</span><h3>Reject invalid, expired, or previously used reset tokens</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify reset tokens that are invalid, expired, or already consumed cannot change account credentials.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved test flows can produce invalid, expired, and used reset-token states without altering production accounts.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Open a malformed or invalid test reset link.</li><li>Open a reset link after its configured expiry.</li><li>Complete a reset once, then try to reuse the same link.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Each unusable token is rejected with safe recovery guidance; no password change occurs for the rejected attempts.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-01, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Invalid, expired, and consumed synthetic reset tokens</td><td>Reset denied; no credential change</td><td>Token lifetime policy TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-rec-006">
+            <div class="case-heading"><span class="case-id">TC-REC-006</span><h3>Enforce configured password requirements during reset</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm passwords that fail configured requirements are rejected and explained.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Valid synthetic reset token is available and password rules have been supplied by product/security.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit a password below the configured minimum or otherwise failing a required rule.</li><li>Submit a password meeting the configured rules.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Non-compliant password is rejected with actionable, accessible feedback; compliant password is accepted. No unspecified complexity rule is assumed.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-REC-02, REQ-AUTH-02, REQ-A11Y-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Synthetic password failing one defined policy; one compliant password</td><td>Failing value rejected; compliant value accepted</td><td>Exact policy TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="enterprise">
+        <h2>Multi-Factor Authentication and Enterprise SSO</h2>
+        <p class="callout"><strong>Release-dependent:</strong> Execute only when MFA or SSO is enabled for the release and test identity provider configuration is available.</p>
+        <div class="group">
+          <article id="tc-ent-001">
+            <div class="case-heading"><span class="case-id">TC-ENT-001</span><h3>Complete a valid MFA challenge</h3><span class="priority">High · Release-dependent</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify a valid MFA challenge completes sign-in for an account configured for MFA.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>MFA is in release scope; synthetic account and approved challenge delivery/test mechanism are configured.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit valid primary credentials for the MFA-enabled account.</li><li>Complete the challenge using the current valid test factor.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Valid challenge is accepted once and the user reaches the authorized dashboard; challenge state and session are handled securely.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-ENT-01, REQ-AUTH-01, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>MFA-enabled synthetic user and valid current challenge</td><td>Challenge accepted; sign-in completes</td><td>Factor type depends on implementation</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-ent-002">
+            <div class="case-heading"><span class="case-id">TC-ENT-002</span><h3>Reject an invalid MFA challenge and handle cancellation</h3><span class="priority">High · Release-dependent</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Ensure an invalid challenge or user cancellation does not grant access and provides a safe recovery path.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>MFA is enabled for a synthetic account in an approved test environment.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit valid primary credentials and enter an invalid or expired test challenge.</li><li>Repeat and cancel or navigate away from the MFA challenge.</li><li>Attempt access to the protected dashboard.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Invalid/expired challenge is rejected; cancellation does not authenticate the user; protected dashboard remains unavailable without successful MFA; feedback and retry behavior follow configured policy.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-ENT-01, REQ-AUTH-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Invalid/expired synthetic challenge; canceled challenge</td><td>Access denied; no authenticated session</td><td>Retry rules TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-ent-003">
+            <div class="case-heading"><span class="case-id">TC-ENT-003</span><h3>Authenticate through configured enterprise SSO</h3><span class="priority">High · Release-dependent</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify an enterprise user can authenticate through the configured SSO provider and return to VWO.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>SSO is in release scope; approved synthetic enterprise identity and test SAML/OAuth provider configuration are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Select the configured enterprise SSO option.</li><li>Authenticate with the synthetic identity at the approved provider.</li><li>Complete any configured challenge and return to the VWO application.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>The configured protocol completes successfully; the correct organization/user is associated with the session and the user reaches the authorized VWO destination.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-ENT-02, REQ-INT-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Configured SSO option and synthetic enterprise identity</td><td>Authenticated session mapped to expected account/organization</td><td>Provider/protocol setup TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-ent-004">
+            <div class="case-heading"><span class="case-id">TC-ENT-004</span><h3>Handle SSO denial, cancellation, and provider unavailability</h3><span class="priority">High · Release-dependent</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify SSO failures and cancellation are handled safely without creating an authenticated VWO session.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>SSO is in release scope and failure/cancel/unavailable-provider scenarios can be simulated in QA.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Start SSO and deny authentication at the test identity provider.</li><li>Repeat and cancel at the provider.</li><li>Repeat with the provider unavailable using an approved test configuration.</li><li>Attempt protected dashboard access after each outcome.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Each unsuccessful flow gives clear recovery guidance; no unauthorized session or dashboard access is created; sensitive provider details are not exposed.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-ENT-02, REQ-AUTH-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Provider denial; canceled SSO; simulated provider outage</td><td>Sign-in denied with safe guidance for each path</td><td>QA provider configuration required</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="experience">
+        <h2>User Experience, Compatibility, and Accessibility</h2>
+        <div class="group">
+          <article id="tc-ux-001">
+            <div class="case-heading"><span class="case-id">TC-UX-001</span><h3>Verify responsive layout and touch usability</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm login and recovery controls remain usable on agreed desktop, tablet, and mobile viewports.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Agreed viewport/device matrix and supported browsers are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Open login at each agreed viewport and supported browser.</li><li>Inspect layout, text, buttons, links, and announcement content.</li><li>Use touch input on mobile to complete field entry and navigate links.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Content reflows without unintended clipping or horizontal scrolling; controls are visible, readable, and touch-operable; login and recovery tasks remain possible.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-UX-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Agreed desktop/tablet/mobile viewports and browser matrix</td><td>Responsive, usable layout at each supported configuration</td><td>Exact matrix TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-ux-002">
+            <div class="case-heading"><span class="case-id">TC-UX-002</span><h3>Verify clickable labels and keyboard navigation</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Ensure form labels activate their controls and all login-page controls are usable without a pointer.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Login page is available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Click the email and password labels and observe focus.</li><li>Use Tab/Shift+Tab and Enter/Space to reach and operate the fields, Remember Me, login, recovery, registration, and theme controls where present.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Each label focuses or toggles its associated control; focus order is logical and visible; every interactive control can be reached and operated by keyboard.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-UX-01, REQ-A11Y-01, REQ-UX-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Pointer label activation; keyboard-only navigation</td><td>Correct label/control association and keyboard operation</td><td>Include all available controls</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-a11y-001">
+            <div class="case-heading"><span class="case-id">TC-A11Y-001</span><h3>Verify screen-reader names, errors, and state announcements</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify assistive technology can identify controls and perceive validation, loading, and authentication feedback.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Supported screen reader and browser combination is agreed and available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Navigate the login and recovery forms using a screen reader.</li><li>Inspect accessible names, roles, labels, and instructions for each control.</li><li>Trigger a validation error and a login loading/error state.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Controls expose meaningful names and roles; validation and processing feedback is announced and associated with the relevant fields; no essential instruction relies only on visual styling.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-A11Y-01, REQ-AUTH-02, REQ-UX-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Agreed screen-reader/browser pair; invalid email and login attempt</td><td>Names, field errors, and dynamic states are perceivable</td><td>Tool/browser matrix TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-a11y-002">
+            <div class="case-heading"><span class="case-id">TC-A11Y-002</span><h3>Check contrast, high-contrast mode, and zoom/reflow</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Evaluate visual accessibility and usability under high contrast and zoom/reflow conditions against WCAG 2.1 AA.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved browsers, high-contrast setting, and accessibility evaluation method are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Inspect text, controls, focus indicators, and error messages in the normal theme.</li><li>Enable the supported high-contrast mode and repeat checks.</li><li>Zoom/reflow the page using the agreed accessibility checks and operate the form.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Text and controls remain distinguishable, focus/errors remain visible, and content reflows without preventing login or recovery. Applicable contrast and accessibility checks meet WCAG 2.1 AA acceptance criteria.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-A11Y-01, REQ-UX-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Normal/high-contrast mode and agreed zoom/reflow settings</td><td>Controls and content remain accessible; WCAG AA checks pass</td><td>Record tool and browser versions</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-ux-003">
+            <div class="case-heading"><span class="case-id">TC-UX-003</span><h3>Verify brand, light/dark themes, announcement, and trial link</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify login-page branding, theme options, product announcement, and free-trial registration path.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved brand/design reference and valid non-production registration destination are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Inspect VWO branding and product announcement in light mode.</li><li>Switch to dark mode and inspect text, controls, and announcement.</li><li>Activate the free-trial registration link.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Brand presentation matches approved design; available themes render legibly; announcement is visible and usable; free-trial link opens the intended registration path.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-UX-02, REQ-JOURNEY-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Light/dark mode selection; trial registration activation</td><td>Correct theme and route to approved registration destination</td><td>Destination and theme persistence TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="security">
+        <h2>Security and Privacy Controls</h2>
+        <p class="callout"><strong>Safety boundary:</strong> Execute these checks only on authorized test environments and with synthetic accounts. Verify observable controls or approved configuration/evidence; do not perform unapproved attack simulation against production.</p>
+        <div class="group">
+          <article id="tc-sec-001">
+            <div class="case-heading"><span class="case-id">TC-SEC-001</span><h3>Enforce HTTPS for login and recovery communications</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify authentication and recovery pages and requests use HTTPS/TLS.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved QA URL and browser network/security inspection are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Open the login page using the approved URL and inspect the connection.</li><li>Submit synthetic credentials and inspect the authentication request destination and transport.</li><li>Repeat for password recovery.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Login, recovery, and authentication communications use HTTPS/TLS; no sensitive authentication request is sent over an unencrypted connection; browser does not report certificate errors.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-SEC-01, REQ-REC-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved QA login and recovery URLs; synthetic credentials</td><td>All authentication traffic protected by HTTPS/TLS</td><td>Test configuration only</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-sec-002">
+            <div class="case-heading"><span class="case-id">TC-SEC-002</span><h3>Verify sensitive values are not exposed in client-side surfaces</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Check that passwords, session tokens, and reset tokens are not unnecessarily exposed in the rendered UI, URLs, or approved client-side diagnostics.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Use synthetic accounts in QA; security owner has approved the inspection method and evidence handling.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit synthetic credentials and inspect the resulting page URL and approved browser diagnostics.</li><li>Authenticate and inspect approved client-side storage/session handling for unexpected credential exposure.</li><li>Initiate password recovery and inspect page URL and visible feedback without copying token values into evidence.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Passwords are not exposed in URLs or visible feedback; session and reset tokens are handled only as intended by the approved secure design and are not unnecessarily disclosed in client-side surfaces or shared logs.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-SEC-01, REQ-SEC-02, REQ-REC-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Synthetic credentials, authenticated session, controlled reset flow</td><td>No unintended secret exposure; approved handling verified</td><td>Redact all secrets from evidence</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-sec-003">
+            <div class="case-heading"><span class="case-id">TC-SEC-003</span><h3>Verify session timeout and protected-route enforcement</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Confirm an expired or invalid session cannot continue to access protected VWO pages.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Session timeout and invalidation policy is documented; synthetic account is available in QA.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Sign in and access a protected dashboard page.</li><li>Allow the configured session timeout to elapse or invalidate the test session through an approved method.</li><li>Refresh or navigate back to the protected page.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Expired/invalid session is rejected; the user is directed to reauthenticate or shown the approved expiry message; protected data is not made available from a stale session.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-AUTH-03, REQ-SEC-02, REQ-INT-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Authenticated synthetic account; configured expiry/invalidated session</td><td>Protected access denied after session expiry</td><td>Timeout value TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-sec-004">
+            <div class="case-heading"><span class="case-id">TC-SEC-004</span><h3>Verify configured rate limiting for repeated failed login attempts</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify repeated failed authentication attempts are subject to the configured throttling/security policy.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Security owner has approved a rate-limit test threshold, duration, test account, and QA-only execution window.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Submit failed login attempts using the approved test rate and count.</li><li>Observe response behavior and any configured retry restriction or challenge.</li><li>Stop once the approved limit is reached; do not continue beyond the authorized test plan.</li><li>Verify a valid user can recover access according to the configured policy.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Configured throttling is applied as specified, unauthorized access is not granted, feedback is safe, and recovery/unlock behavior follows the approved policy.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-SEC-03, REQ-AUTH-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved synthetic account and authorized failed-attempt count/rate</td><td>Configured rate limiting is enforced without account compromise</td><td>Threshold and lockout policy TBD; QA only</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-sec-005">
+            <div class="case-heading"><span class="case-id">TC-SEC-005</span><h3>Verify password storage protection through approved evidence</h3><span class="priority">Critical</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify the system's password storage protection requirement using approved security/architecture evidence.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Security owner provides authorized documentation or test evidence for password-storage controls; no direct production data access.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Review approved implementation/configuration evidence for industry-standard password hashing and protected storage.</li><li>Confirm evidence does not expose real credentials or user records.</li><li>Record any gap through the approved restricted security defect process.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Approved evidence confirms passwords are not stored in plaintext and that the configured storage protection meets the organization-approved standard. No sensitive data is copied into the test report.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved security/architecture evidence only</td><td>Password storage protection verified without exposing secrets</td><td>Requires security-owner review</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="performance">
+        <h2>Performance and Availability</h2>
+        <div class="group">
+          <article id="tc-perf-001">
+            <div class="case-heading"><span class="case-id">TC-PERF-001</span><h3>Measure login page load against the two-second target</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Measure login page load time on a standard connection and compare it with the PRD target of under two seconds.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved QA/pre-production endpoint, standard network profile, browser, measurement definition, and performance tool are agreed.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Record browser, device, network profile, cache state, and measurement method.</li><li>Load the login page using the agreed conditions for the agreed sample count.</li><li>Record page-load measurements and compare results with the target.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Login page loads in under two seconds under the PRD's standard-connection target and agreed measurement conditions; deviations are documented with test context.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-PERF-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Agreed standard network, browser/device, and load-time measurement definition</td><td>Measured login-page load is less than 2 seconds</td><td>Sample size and exact metric TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-perf-002">
+            <div class="case-heading"><span class="case-id">TC-PERF-002</span><h3>Verify login service behavior under an approved concurrent-user load</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Assess login behavior under an authorized concurrency profile based on the PRD's scalability requirement.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Load testing is authorized for a non-production environment; performance owner defines a safe workload, target concurrency, success criteria, and monitoring.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Prepare synthetic identities and an approved representative login workload.</li><li>Run the agreed ramp-up and concurrent-user profile while monitoring service health and authentication outcomes.</li><li>Stop at the approved limit or if agreed safety thresholds are breached.</li><li>Compare observed behavior to signed-off performance criteria.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Service handles the approved concurrent login workload without unauthorized access or unacceptable service failure and meets agreed latency/error criteria. The PRD's reference to thousands of simultaneous attempts is not a precise load profile; exact concurrency and thresholds must be agreed before execution.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-PERF-02, REQ-SEC-03</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Authorized workload, concurrency, synthetic users, and success criteria</td><td>Service meets agreed reliability/performance thresholds</td><td>All values TBD; non-production only</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-perf-003">
+            <div class="case-heading"><span class="case-id">TC-PERF-003</span><h3>Verify availability against the stated service target</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Review login service availability against the PRD's 99.9% uptime objective.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved monitoring/SLA reports and an agreed measurement period and availability definition are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Obtain the approved availability report for the agreed period.</li><li>Confirm the measurement method, exclusions, and login-specific service scope.</li><li>Compare measured availability to the 99.9% target.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Measured availability meets or exceeds 99.9% for the agreed measurement period and service definition, or variance is documented for service-owner review.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-PERF-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved monitoring/SLA report and measurement period</td><td>Availability meets the 99.9% target</td><td>Period and definition TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="integrations">
+        <h2>Integrations and User Journey</h2>
+        <div class="group">
+          <article id="tc-int-001">
+            <div class="case-heading"><span class="case-id">TC-INT-001</span><h3>Preserve the intended destination and user context after login</h3><span class="priority">High</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify successful authentication transitions to the authorized VWO destination and preserves context where supported.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Approved protected destination or prior-session context is available for a synthetic account.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Navigate to an approved protected VWO destination while signed out.</li><li>Authenticate with valid synthetic credentials.</li><li>Observe the post-login destination and available recent-session context.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>User reaches the authorized destination or personalized dashboard as specified; supported prior context is preserved without bypassing authorization.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-INT-01, REQ-AUTH-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Protected destination and authorized synthetic account</td><td>Successful sign-in returns user to permitted destination/context</td><td>Context behavior to be confirmed</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-int-002">
+            <div class="case-heading"><span class="case-id">TC-INT-002</span><h3>Track login success and failure analytics without credential leakage</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify configured analytics record login outcomes and do not collect raw credentials or unnecessary sensitive data.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Analytics integration is enabled in QA; approved event expectations and privacy policy are available.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Perform one successful login using a synthetic account.</li><li>Perform one failed login using synthetic test data.</li><li>Inspect the approved analytics test sink for event type and data fields.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Success and failure events are recorded as configured; event data contains no password, reset token, or unnecessary personal data; tracking behavior follows approved privacy requirements.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-INT-02, REQ-SEC-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>One synthetic successful and one failed login</td><td>Expected outcome events present; no secrets in event payload</td><td>Event schema/privacy criteria TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-int-003">
+            <div class="case-heading"><span class="case-id">TC-INT-003</span><h3>Open the configured customer-support route from login assistance</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify login assistance reaches the configured customer-support destination.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Support link or assistance route is configured in the target environment.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Locate the login assistance/support link.</li><li>Activate it with pointer and keyboard input.</li><li>Verify the destination and any permitted context passed to support.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Link is operable and opens the approved support destination; no password, session token, or reset token is included in the destination or request.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-INT-02, REQ-A11Y-01</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Pointer and keyboard activation of configured support link</td><td>Approved support page opens without sensitive values</td><td>Link/configuration TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+
+          <article id="tc-journey-001">
+            <div class="case-heading"><span class="case-id">TC-JOURNEY-001</span><h3>Verify free-trial registration entry and onboarding handoff</h3><span class="priority">Medium</span><span class="status">Not Run</span></div>
+            <div class="case-content">
+              <div class="field"><strong>Author</strong><p>TBD</p></div><div class="field"><strong>Date Created / Last Modified</strong><p>2026-10-20 / 2026-10-20</p></div>
+              <div class="field full"><strong>Test Objective</strong><p>Verify a new user can move from login to trial registration and the configured post-registration onboarding path.</p></div>
+              <div class="field full"><strong>Preconditions</strong><p>Non-production trial registration and onboarding destinations are available and account creation is approved for QA.</p></div>
+              <div class="field full"><strong>Test Steps</strong><ol class="steps"><li>Activate the free-trial link from the login page.</li><li>Complete the approved synthetic trial-registration flow.</li><li>Observe the confirmation and post-registration onboarding destination.</li></ol></div>
+              <div class="field full"><strong>Expected Result</strong><p>Registration link opens the intended flow; successful registration gives clear confirmation and the configured guided onboarding handoff; failures provide actionable feedback.</p></div>
+              <div class="field"><strong>Actual Result</strong><p>Not executed.</p></div><div class="field"><strong>Attachments</strong><p>No attachments provided.</p></div>
+              <div class="field full"><strong>Related Requirements</strong><p>REQ-JOURNEY-01, REQ-UX-02</p></div>
+              <div class="field full"><strong>Test Data</strong><div class="table-wrap"><table><thead><tr><th>Input</th><th>Expected Output</th><th>Remarks</th></tr></thead><tbody><tr><td>Approved synthetic registration data</td><td>Registration completes and onboarding begins as configured</td><td>Registration requirements TBD</td></tr></tbody></table></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer>VWO Login Dashboard Test Cases · Prepared from the PRD supplied with this request · Record execution outcomes in the approved test management system.</footer>
+</body>
+</html>

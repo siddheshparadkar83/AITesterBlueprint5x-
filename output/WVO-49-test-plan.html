@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WVO-49 Test Plan - Draft</title>
+  <style>
+    @page { size: A4; margin: 15mm 14mm 16mm; }
+    * { box-sizing: border-box; }
+    body { color: #202a35; font: 10pt/1.42 Arial, Helvetica, sans-serif; margin: 0; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { color: #17365d; font-size: 24pt; line-height: 1.15; margin-bottom: 5mm; }
+    h2 { border-bottom: 2px solid #d40000; color: #17365d; font-size: 16pt; margin: 0 0 4mm; padding-bottom: 2mm; }
+    h3 { color: #17365d; font-size: 11pt; margin: 4mm 0 2mm; }
+    p { margin-bottom: 2.5mm; }
+    ul, ol { margin: 1.5mm 0 3mm; padding-left: 6mm; }
+    li { margin-bottom: 1mm; }
+    .brand { align-items: center; border-bottom: 1px solid #d5dce5; display: flex; gap: 7mm; margin-bottom: 7mm; padding-bottom: 4mm; }
+    .brand img { height: 23mm; object-fit: contain; width: 34mm; }
+    .brand-text { color: #4a5563; font-size: 9pt; }
+    .brand-text strong { color: #17365d; display: block; font-size: 12pt; }
+    .status { background: #fff3dc; border: 1px solid #e6b959; color: #644500; font-weight: bold; margin: 4mm 0; padding: 3mm; }
+    .notice { background: #f3f6fa; border-left: 3px solid #59799d; margin: 3mm 0; padding: 3mm; }
+    .warning { background: #fff4f1; border-left: 3px solid #d40000; margin: 3mm 0; padding: 3mm; }
+    .meta, table { border-collapse: collapse; width: 100%; }
+    .meta { margin: 4mm 0; }
+    .meta th, .meta td, th, td { border: 1px solid #d8dee7; padding: 2mm; text-align: left; vertical-align: top; }
+    .meta th { background: #eef2f7; width: 28%; }
+    th { background: #17365d; color: #fff; font-weight: bold; }
+    .small { color: #4a5563; font-size: 8.5pt; }
+    .compact { font-size: 7.3pt; line-height: 1.25; }
+    .compact th, .compact td { padding: 1.2mm 1.4mm; }
+    .missing { color: #9c2c20; font-weight: bold; }
+    .ambiguous { color: #805900; font-weight: bold; }
+    .priority { white-space: nowrap; }
+    .page-break { break-before: page; page-break-before: always; }
+    .review { border: 2px solid #d40000; margin-top: 5mm; padding: 4mm; }
+    .review h2 { border: 0; color: #9d0000; margin-bottom: 2mm; }
+    .footer-note { border-top: 1px solid #d5dce5; color: #65717e; font-size: 8pt; margin-top: 5mm; padding-top: 2mm; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    @media screen {
+      body { margin: 12mm auto; max-width: 210mm; padding: 0 14mm; }
+      .page-break { border-top: 2px dashed #cbd3dd; margin-top: 12mm; padding-top: 12mm; }
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <div class="brand">
+      <img src="../Chapter_00_SKILL_Basic/01_advance_skill/testplan-creator-skill-a/misc/company.png" alt="Logo supplied with the test plan skill">
+      <div class="brand-text">
+        <strong>Test Plan | Tech Mahindra</strong>
+        Company profile supplied with the skill: Tech Mahindra; described there as a Mahindra &amp; Mahindra product; 15,000 employees.
+      </div>
+    </div>
+
+    <h1>WVO-49: Failed login to the website</h1>
+    <div class="status">DRAFT — HUMAN REVIEW REQUIRED — NOT APPROVED</div>
+
+    <table class="meta">
+      <tr><th>Requested Jira key</th><td>WVO-49 (not verified against Jira)</td></tr>
+      <tr><th>Ticket summary provided</th><td>Defect raised for failed login into the website. This description was provided earlier in the conversation; confirmation that it describes WVO-49 is pending.</td></tr>
+      <tr><th>Jira verification</th><td>Fetch returned HTTP 404: issue does not exist or the configured Jira account cannot view it.</td></tr>
+      <tr><th>Source and date</th><td>User-provided description; 28 October 2026.</td></tr>
+      <tr><th>Ticket type, priority, version</th><td>Not available from Jira; confirm with the ticket owner.</td></tr>
+    </table>
+
+    <div class="warning">
+      <strong>Branding check:</strong> The company profile names Tech Mahindra, while the supplied logo image reads “Dice.” The supplied image is included as requested, but confirm the correct company name and logo before circulation.
+    </div>
+
+    <h2>1. Scope and Objectives</h2>
+    <p><strong>In scope:</strong> Investigate and verify the reported website login failure. The affected page, platform, user groups, and precise failure conditions have not been provided.</p>
+    <p><strong>Out of scope:</strong> Not defined. Confirm whether registration, password reset, MFA, account lockout, and other authentication flows are affected or excluded.</p>
+    <p><strong>Objective:</strong> Establish reproducible steps and expected behavior, verify the agreed fix for the reported login failure, and check relevant authentication regressions after the acceptance criteria and test access are confirmed.</p>
+
+    <h3>Information available</h3>
+    <ul>
+      <li>Requested issue key: WVO-49; Jira did not confirm the issue or provide access.</li>
+      <li>Previously supplied defect description: “Defect raised for failed login into the website.”</li>
+      <li>Ticket description, acceptance criteria, comments, attachments, links, and metadata were not accessible through the configured Jira account.</li>
+    </ul>
+
+    <h3>Company profile</h3>
+    <p>Per the skill’s company-details note: Tech Mahindra, described in that note as a Mahindra &amp; Mahindra product, with 15,000 employees. The supplied Dice logo does not match that company name; see the branding question in Section 2.</p>
+  </section>
+
+  <section class="page-break">
+    <h2>2. Requirement Gap Analysis</h2>
+    <p class="small">Status is based only on the user-provided one-line defect description. Each missing or ambiguous item has a corresponding question; no acceptance criteria have been inferred.</p>
+    <table class="compact">
+      <thead><tr><th>#</th><th>Checklist item</th><th>Status</th><th>Question / information needed</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>User story / goal</td><td class="missing">MISSING</td><td>Who cannot log in, and what should they be able to do?</td></tr>
+        <tr><td>2</td><td>Testable acceptance criteria</td><td class="missing">MISSING</td><td>What observable results define the fix as accepted?</td></tr>
+        <tr><td>3</td><td>Happy path</td><td class="missing">MISSING</td><td>What are the supported login steps and expected post-login state?</td></tr>
+        <tr><td>4</td><td>Negative / error paths</td><td class="ambiguous">AMBIGUOUS</td><td>What exact failure is observed, what message appears, and how should invalid credentials or service failures be handled?</td></tr>
+        <tr><td>5</td><td>Boundary / empty states</td><td class="missing">MISSING</td><td>What is expected for empty fields, input limits, and other defined boundary values?</td></tr>
+        <tr><td>6</td><td>State transitions / workflow</td><td class="missing">MISSING</td><td>Which login, verification, session, and logout states are in scope?</td></tr>
+        <tr><td>7</td><td>Test data</td><td class="missing">MISSING</td><td>Which approved test accounts and account states may QA use? Do not share real passwords.</td></tr>
+        <tr><td>8</td><td>Environment / configuration</td><td class="missing">MISSING</td><td>What site URL, environment, build, and feature flags reproduce the defect?</td></tr>
+        <tr><td>9</td><td>External dependencies</td><td class="ambiguous">AMBIGUOUS</td><td>Which identity provider, MFA, CAPTCHA, or other sign-in dependencies are involved, if any?</td></tr>
+        <tr><td>10</td><td>Preconditions / setup</td><td class="missing">MISSING</td><td>What setup, user role, account state, and steps are required to reproduce?</td></tr>
+        <tr><td>11</td><td>Performance / load</td><td class="missing">MISSING</td><td>Are response-time or concurrent-login expectations part of this change?</td></tr>
+        <tr><td>12</td><td>Security / authorization</td><td class="missing">MISSING</td><td>Which roles and security outcomes must be verified, including session handling and error-message disclosure?</td></tr>
+        <tr><td>13</td><td>Accessibility</td><td class="missing">MISSING</td><td>Which accessibility expectations or standards apply to the login flow?</td></tr>
+        <tr><td>14</td><td>Internationalization</td><td class="missing">MISSING</td><td>Which locales, languages, and localized error messages are in scope?</td></tr>
+        <tr><td>15</td><td>Audit / observability</td><td class="missing">MISSING</td><td>Which logs, events, or alerts should record success and failure without exposing secrets?</td></tr>
+        <tr><td>16</td><td>Regression impact</td><td class="missing">MISSING</td><td>Which existing login clients, user groups, or related flows may be affected?</td></tr>
+        <tr><td>17</td><td>Compatibility / migration</td><td class="missing">MISSING</td><td>Are browser, device, API, or account-data compatibility changes expected?</td></tr>
+        <tr><td>18</td><td>Responsive / browser matrix</td><td class="missing">MISSING</td><td>Which supported browsers, devices, and viewport sizes should be covered?</td></tr>
+        <tr><td>19</td><td>Rollback / feature flag</td><td class="missing">MISSING</td><td>Is a feature flag or rollback procedure available, and what behavior is expected when disabled?</td></tr>
+        <tr><td>20</td><td>Wording / terminology</td><td class="ambiguous">AMBIGUOUS</td><td>Does “failed login” mean all users, a specific account class, or a specific failure condition?</td></tr>
+        <tr><td>21</td><td>Defined terms</td><td class="missing">MISSING</td><td>What do “website,” “login failure,” and “successful login” mean for this ticket?</td></tr>
+        <tr><td>22</td><td>Design / supporting links</td><td class="missing">MISSING</td><td>Are mockups, logs, screenshots, linked issues, or attachments available?</td></tr>
+        <tr><td>23</td><td>Brand / logo</td><td class="ambiguous">AMBIGUOUS</td><td>Should the PDF/HTML use the supplied Dice logo or a Tech Mahindra logo?</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="page-break">
+    <h2>3. Test Scenarios</h2>
+    <p class="small">Priorities are provisional: Jira priority and business impact could not be verified. Confirm preconditions and expected results before execution.</p>
+    <table class="compact">
+      <thead><tr><th>ID</th><th>Priority</th><th>Type</th><th>Scenario and execution notes</th><th>Expected result / traceability</th></tr></thead>
+      <tbody>
+        <tr><td>TS-01</td><td class="priority">P1, provisional</td><td>Reproduction</td><td>Using owner-provided steps, an approved test account, and the affected environment, repeat the failing login. Record steps, timestamp, browser/build, and sanitized error details.</td><td>Defect is characterized and evidence captured without recording credentials. Maps to user-reported defect; blocked pending reproduction details and environment.</td></tr>
+        <tr><td>TS-02</td><td class="priority">P1, provisional</td><td>Positive</td><td>After the fix, sign in with an approved valid test account using the supported login flow.</td><td>Authentication succeeds and the authorized post-login state matches confirmed acceptance criteria. Confirm applicability and expected state.</td></tr>
+        <tr><td>TS-03</td><td class="priority">P2, provisional</td><td>Negative</td><td>Attempt sign-in with an approved invalid-credential test case, if this path is in scope.</td><td>Authentication is denied and the response matches agreed validation/security requirements; no secret is exposed.</td></tr>
+        <tr><td>TS-04</td><td class="priority">P2, provisional</td><td>Boundary</td><td>Submit empty required fields and agreed boundary-length inputs, if validation is part of this ticket.</td><td>Behavior matches documented field validation and limits; no unexpected authenticated state is created.</td></tr>
+        <tr><td>TS-05</td><td class="priority">P2, provisional</td><td>Regression / compatibility</td><td>Repeat agreed positive and negative login cases across supported browsers/devices and affected roles after the fix.</td><td>Results meet confirmed compatibility and authorization requirements with no regression.</td></tr>
+      </tbody>
+    </table>
+    <div class="notice"><strong>Execution constraint:</strong> TS-02 through TS-05 are conditional test ideas, not confirmed acceptance criteria. Confirm applicability and expected results with the ticket owner before execution.</div>
+  </section>
+
+  <section class="page-break">
+    <h2>4. Test Data and Environment</h2>
+    <ul>
+      <li><strong>Website / URL:</strong> Not provided.</li>
+      <li><strong>Environment, build, configuration, flags:</strong> Not provided.</li>
+      <li><strong>Test data:</strong> Obtain approved synthetic accounts for required roles and account states. Do not put passwords, tokens, or personal credentials in the plan or evidence.</li>
+      <li><strong>Roles / permissions:</strong> Not provided; confirm role coverage and expected access after authentication.</li>
+      <li><strong>Browser / device matrix:</strong> Not provided; use the product’s supported matrix once confirmed.</li>
+      <li><strong>Dependencies:</strong> Identity provider, MFA, CAPTCHA, and other integrations are unknown and must be confirmed before setup.</li>
+    </ul>
+
+    <h2>5. Risks and Assumptions</h2>
+    <h3>Risks</h3>
+    <ul>
+      <li>Jira returned 404 for WVO-49. The key may be incorrect, or the configured account may lack access; the plan may not reflect the ticket’s complete requirements, links, or attachments.</li>
+      <li>The previously provided one-line defect description has not been confirmed as the content of WVO-49.</li>
+      <li>Without reproduction steps, expected behavior, environment, and test accounts, reproducibility and fix verification are blocked.</li>
+      <li>Authentication failures can prevent user access; affected population, severity, security impact, and workaround are unknown.</li>
+      <li>The supplied company profile and logo appear inconsistent; confirm branding before distribution.</li>
+    </ul>
+    <h3>Assumptions explicitly labeled for review</h3>
+    <ul>
+      <li>WVO-49 is the requested key; Jira did not confirm that it exists or that the configured account can access it.</li>
+      <li>The defect description available in the conversation may describe WVO-49; this association has not been verified.</li>
+      <li>Scenario priorities are tentative risk-based placeholders, not the Jira issue priority.</li>
+    </ul>
+
+    <h2>6. Entry / Exit Criteria</h2>
+    <h3>Entry</h3>
+    <ul>
+      <li>Confirm the Jira key and provide the complete issue description and acceptance criteria.</li>
+      <li>Provide exact reproduction steps, affected environment/build, and expected versus actual behavior.</li>
+      <li>Provide approved test accounts, roles, and required identity-provider dependencies.</li>
+      <li>Confirm supported browser/device coverage, applicable security requirements, and branding.</li>
+    </ul>
+    <h3>Exit</h3>
+    <ul>
+      <li>All agreed scenarios are executed with results and sanitized evidence recorded.</li>
+      <li>The defect is verified against confirmed acceptance criteria; relevant regression results are documented.</li>
+      <li>Failures, unresolved risks, and blocked scenarios are reported, and a QA owner reviews the plan and results.</li>
+    </ul>
+
+    <div class="review">
+      <h2>HUMAN REVIEW GATE</h2>
+      <p><strong>Could not confirm:</strong> Jira content or access, the association between WVO-49 and the earlier defect description, acceptance criteria, exact defect symptoms, reproduction steps, expected behavior, environment, priority, test data, scope, or company branding.</p>
+      <p><strong>Questions blocking sign-off:</strong> Confirm WVO-49 is the intended key and provide the full ticket content; define the failing condition and expected fixed behavior; specify environment, test accounts, applicable flows, and supported coverage; confirm the correct company logo.</p>
+      <p><strong>Approval:</strong> QA / product owner to review and edit this draft. It is not approved and must not be treated as final.</p>
+    </div>
+    <p class="footer-note">Prepared as a draft from information available in the conversation. Jira issue details were unavailable at generation time.</p>
+  </section>
+</body>
+</html>
