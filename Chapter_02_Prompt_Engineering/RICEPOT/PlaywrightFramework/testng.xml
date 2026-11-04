@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="VWO Login Suite" verbose="1">
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+    <test name="Valid Login">
+        <classes>
+            <class name="com.blueprint.vwo.tests.LoginValidTest"/>
+        </classes>
+    </test>
+    <test name="Invalid Login">
+        <classes>
+            <class name="com.blueprint.vwo.tests.LoginInvalidTest"/>
+        </classes>
+    </test>
+</suite>
