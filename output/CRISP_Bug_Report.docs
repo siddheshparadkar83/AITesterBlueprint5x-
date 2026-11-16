@@ -1,0 +1,54 @@
+Hypothetical training example
+
+Title: CRISP_Bug_Report
+
+Environment
+- URL: https://app.vwo.com/
+- Browser/version: Not supplied.
+- Operating system: Not supplied.
+- Build: Not supplied.
+- Execution time: Not supplied.
+
+Preconditions
+- The user is logged out.
+- A registered test account exists.
+- The login page is available and ready for input.
+
+Test Data
+- Registered email: <registered_email>
+- Password: <empty>
+
+Steps to Reproduce
+1. Open https://app.vwo.com/.
+2. Ensure the user is logged out.
+3. Enter a valid registered email in the email field.
+4. Leave the password field empty.
+5. Submit the login form.
+
+Expected Result
+- The application should treat the password as mandatory.
+- The form should not submit successfully when the password is empty.
+- The user should receive visible validation feedback or be prevented from proceeding.
+- The user should remain on the login page until a valid password is entered.
+
+Actual Result
+- The form submits without any visible validation feedback when the password is empty.
+- The user is not prevented from continuing with the empty password field.
+- This behavior was observed in 3 out of 3 attempts.
+
+Reproducibility
+- Reproduced: 3 out of 3 attempts.
+- Frequency: Consistent.
+
+Suggested Severity
+- Provisional severity: High
+- Rationale: This defect violates a stated functional requirement that email and password are mandatory. It prevents valid login validation from functioning as expected and may allow invalid authentication attempts to proceed without the required user input. The issue is directly tied to the login flow and affects core account access behavior.
+
+Attachments
+- Screenshots: Not provided.
+- Video: Not provided.
+- Logs: Not provided.
+
+Notes
+- This is a hypothetical training example and not a confirmed issue in VWO.
+- The exact validation message is not specified in the requirement and therefore is not assumed or invented.
