@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical RICE-POT user guide for analyzing requirements and producing a traceable, testable requirement register.">
+  <title>01 — Requirement Analysis | RICE-POT User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2939;
+      --muted: #526174;
+      --accent: #145da0;
+      --accent-soft: #eaf3fb;
+      --line: #d7e0e9;
+      --surface: #fff;
+      --page: #f3f6fa;
+      --code: #17212f;
+      --code-ink: #edf4fb;
+      --warning: #fff8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(100% - 32px, 1040px);
+      margin: 36px auto;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgb(22 43 66 / 7%);
+    }
+
+    header { margin-bottom: 32px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin: 44px 0 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    h3 { margin: 24px 0 8px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .intro { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 22px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; }
+    .card strong { display: block; margin-bottom: 4px; }
+    .use { background: var(--accent-soft); }
+    .skip { background: var(--warning); }
+    nav { margin: 28px 0; padding: 18px 22px; background: #f8fafc; border-radius: 10px; }
+    nav strong { display: block; margin-bottom: 5px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; padding-left: 20px; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 22px;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: 10px;
+      font: .9rem/1.65 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code { font-family: "Cascadia Code", Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f2f6fa; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 5px 0; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "□"; margin-right: 10px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      nav { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      h2, h3 { break-after: avoid; }
+      pre, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">RICE-POT · QA Prompt Guide</p>
+      <h1>01 — Requirement Analysis</h1>
+      <p class="intro">Use this guide to turn a PRD, user story, Jira ticket, or client email into clear, source-backed requirements that can be tested—without filling gaps with assumptions.</p>
+      <div class="meta">
+        <div class="card use">
+          <strong>Use when</strong>
+          You need to assess and decompose a requirement source before designing tests.
+        </div>
+        <div class="card skip">
+          <strong>Skip when</strong>
+          Requirements are already decomposed and you only need test cases. Continue to <code>02-test-case-design-RICEPOT.md</code>.
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="On this page">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#workflow">How to use</a></li>
+        <li><a href="#prompt">Prompt template</a></li>
+        <li><a href="#example">Filled example</a></li>
+        <li><a href="#contract">Output contract</a></li>
+        <li><a href="#self-check">Self-check</a></li>
+        <li><a href="#skill">Skill conversion</a></li>
+      </ul>
+    </nav>
+
+    <section id="workflow">
+      <h2>How to use this guide</h2>
+      <ol>
+        <li>Collect the complete source material and identify the product or module and any known constraints.</li>
+        <li>Copy the prompt below into your AI tool and replace the bracketed context fields with the actual details.</li>
+        <li>Provide all relevant sources, such as PRD sections, stories, tickets, emails, or screenshots.</li>
+        <li>Review the output against the output contract and self-check before using it for test design.</li>
+      </ol>
+      <p class="note"><strong>Important:</strong> The analysis must report what the supplied sources say. It must not invent requirements or acceptance criteria to make a source appear complete.</p>
+    </section>
+
+    <section id="prompt">
+      <h2>Prompt template</h2>
+      <p>Copy this prompt and fill in the context placeholders. Keep the constraints intact to preserve traceability and avoid unsupported assumptions.</p>
+      <pre><code>### R — Role
+You are a senior QA analyst with 12+ years of experience reviewing requirements
+for testability. You challenge ambiguity and never fill gaps with assumptions.
+
+### I — Instructions
+1. Read every supplied requirement source in full before writing anything.
+2. Extract each discrete, verifiable requirement as one row.
+3. Assign a stable ID in the form REQ-&lt;AREA&gt;-&lt;NNN&gt;.
+4. Classify each requirement as Functional, Non-Functional, Data, Security, or Business Rule.
+5. For each requirement, cite the exact source (document name + section/clause).
+6. Mark each requirement Testable: Yes, No, or Partial, with a one-line reason.
+7. List only the acceptance criteria the source states explicitly. Do not author new ones.
+8. Record every ambiguity, contradiction, and missing detail in a separate gap register.
+9. Raise no more than 10 clarifying questions, highest-impact first.
+
+Do NOT:
+- Invent requirements that are not in the supplied sources.
+- Assume "typical", "standard", or "common sense" behaviour.
+- Rewrite the business intent of a requirement while restating it.
+
+### C — Context
+- Product / module: [PRODUCT NAME, MODULE]
+- Sources supplied: [PRD section, user story, Jira ticket, email, screenshot]
+- Known constraints: [release window, platform, regulatory]
+
+### E — Example
+| REQ-001 | Users can log in with a registered email and password | PRD §4.2 Login | Functional | Yes | Successful login opens the dashboard | — |
+
+### P — Parameters
+- Output must be deterministic: same input, same output.
+- Every requirement row must cite a source. No source, no row.
+- If a detail is missing, respond exactly: "Insufficient information to determine."
+- If you deduce something, label it exactly: "Inference (low confidence)".
+- Never invent field names, validation text, error codes, limits, or SLAs.
+- Requirement statements must be single-sentence and objectively verifiable.
+
+### O — Output
+Return Markdown, in this order and with these exact columns:
+1. **Requirement Register** — Req ID | Requirement Statement | Source | Type | Testable | Acceptance Criteria | Notes
+2. **Gap Register** — GAP ID | Area | Missing / Ambiguous Detail | Why It Blocks Testing | Impact | Owner
+3. **Contradictions** — ID | Requirement A | Requirement B | Conflict
+4. **Clarifying Questions** — numbered, each tied to a GAP ID
+5. **Analysis Summary** — total requirements, testable, partial, not testable, open gaps
+
+### T — Tone
+Factual and precise. No praise, no filler, no restating of the prompt.</code></pre>
+    </section>
+
+    <section id="example">
+      <h2>Filled example</h2>
+      <p>This short example shows how the prompt represents a login requirement source and reports only what the source supports.</p>
+      <pre><code>### C — Context
+- Product / module: VWO — Login Dashboard
+- Sources supplied: PRD §4 Authentication (login only)
+- Known constraints: none supplied
+
+### O — Output (excerpt)
+| REQ-001 | Registered users log in with a valid email and password | PRD §4.1 | Functional | Yes | Authenticated dashboard opens after submit | — |
+| REQ-002 | Email and password are mandatory fields | PRD §4.2 | Functional | Yes | Submit is rejected when either field is empty | Exact validation message not supplied |
+| REQ-003 | Invalid credentials must not grant access | PRD §4.3 | Security | Partial | Access is denied | Error text not specified — GAP-02 |</code></pre>
+    </section>
+
+    <section id="contract">
+      <h2>Output contract</h2>
+      <p>The generated analysis must include all five sections, in the specified order and shape.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">Required</th><th scope="col">Shape</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Requirement Register</td><td>Yes</td><td>Markdown table, 7 columns, stable IDs</td></tr>
+            <tr><td>Gap Register</td><td>Yes</td><td>Markdown table, 6 columns, every gap ID prefixed <code>GAP-</code></td></tr>
+            <tr><td>Contradictions</td><td>Yes (may say “None identified”)</td><td>Markdown table, 4 columns</td></tr>
+            <tr><td>Clarifying Questions</td><td>Yes</td><td>Numbered list, each referencing a GAP ID</td></tr>
+            <tr><td>Analysis Summary</td><td>Yes</td><td>Counts only</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>No requirement may appear without a source.</li>
+        <li>No acceptance criterion may be invented.</li>
+        <li>Every <code>Partial</code> or <code>No</code> testability verdict must map to at least one gap.</li>
+      </ul>
+    </section>
+
+    <section id="self-check">
+      <h2>Self-check</h2>
+      <p>Before accepting the analysis, verify each item:</p>
+      <ul class="checklist">
+        <li>Every row cites a real source section from the supplied material.</li>
+        <li>No requirement appears that was not stated in the source.</li>
+        <li>Every <code>Partial</code> / <code>No</code> testability row links to a GAP ID.</li>
+        <li>Gaps describe <em>what is missing</em>, not a guess at the answer.</li>
+        <li>Questions are answerable by a product owner, not by another AI run.</li>
+        <li>Summary counts match the table row counts exactly.</li>
+      </ul>
+    </section>
+
+    <section id="skill">
+      <h2>SKILL.md conversion</h2>
+      <p>To package this analysis workflow as a skill, use the following metadata:</p>
+      <pre><code>---
+name: requirement-analysis
+description: Analyse a PRD, user story, or ticket and produce a traceable requirement register with a gap register, contradictions, and clarifying questions. Use when requirements must be understood or challenged before test design.
+---</code></pre>
+      <h3>Trigger phrases</h3>
+      <p>“analyse these requirements”, “requirement review”, “is this testable”, “extract requirements from this PRD”, “what's missing in this story”.</p>
+      <h3>Procedure for the skill body</h3>
+      <p>Read all sources → requirement register → gap register → contradictions → questions → summary → run self-check.</p>
+    </section>
+
+    <footer>
+      <strong>Alternative:</strong> If the source is authoritative and unambiguous and you only need to prove coverage, use <code>06-rtm-RICEPOT.md</code> instead of a full analysis pass.
+    </footer>
+  </main>
+</body>
+</html>

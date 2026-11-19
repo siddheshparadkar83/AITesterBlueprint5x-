@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical CRISP user guide for maintaining a consistent defect register with ownership, age, state, duplicate links, and summaries.">
+  <title>05 — Defect Tracking | CRISP User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2939;
+      --muted: #526174;
+      --accent: #145da0;
+      --accent-soft: #eaf3fb;
+      --line: #d7e0e9;
+      --surface: #fff;
+      --page: #f3f6fa;
+      --code: #17212f;
+      --code-ink: #edf4fb;
+      --warning: #fff8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(100% - 32px, 1040px);
+      margin: 36px auto;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgb(22 43 66 / 7%);
+    }
+
+    header { margin-bottom: 32px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin: 44px 0 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    h3 { margin: 24px 0 8px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .intro { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 22px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; }
+    .card strong { display: block; margin-bottom: 4px; }
+    .use { background: var(--accent-soft); }
+    .skip { background: var(--warning); }
+    nav { margin: 28px 0; padding: 18px 22px; background: #f8fafc; border-radius: 10px; }
+    nav strong { display: block; margin-bottom: 5px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; padding-left: 20px; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 22px;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: 10px;
+      font: .9rem/1.65 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code { font-family: "Cascadia Code", Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f2f6fa; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 5px 0; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "□"; margin-right: 10px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      nav { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      h2, h3 { break-after: avoid; }
+      pre, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">CRISP · QA Prompt Guide</p>
+      <h1>05 — Defect Tracking</h1>
+      <p class="intro">Use this guide to maintain one consistent row per defect across a test cycle, with clear state, ownership, ageing, and duplicate links.</p>
+      <div class="meta">
+        <div class="card use">
+          <strong>Use when</strong>
+          You are maintaining a defect log and need consistent tracking and summary reporting.
+        </div>
+        <div class="card skip">
+          <strong>Skip when</strong>
+          You are filing a single detailed defect. Use <code>03-bug-report-CRISP.md</code>.
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="On this page">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#workflow">How to use</a></li>
+        <li><a href="#tracking-rules">Tracking rules</a></li>
+        <li><a href="#prompt">Prompt template</a></li>
+        <li><a href="#example">Filled example</a></li>
+        <li><a href="#contract">Output contract</a></li>
+        <li><a href="#self-check">Self-check</a></li>
+        <li><a href="#skill">Skill conversion</a></li>
+      </ul>
+    </nav>
+
+    <section id="workflow">
+      <h2>How to use this guide</h2>
+      <ol>
+        <li>Collect the defect list, reporting period, release or build, and team roster or owner roles.</li>
+        <li>Set the ageing SLA in days. If none is provided, the default is 5 days.</li>
+        <li>Copy the prompt below into your AI tool and supply the source defects without removing their IDs.</li>
+        <li>Review the normalized register, suspected duplicate links, ageing flags, summaries, and missing-field list.</li>
+      </ol>
+      <p class="note"><strong>Important:</strong> Do not invent missing dates, owners, or build numbers, and do not close or mark a defect Fixed without supplied evidence.</p>
+    </section>
+
+    <section id="tracking-rules">
+      <h2>Tracking rules</h2>
+      <ul>
+        <li>Preserve supplied defect IDs exactly; never renumber them.</li>
+        <li>Represent each distinct defect in one row. Link probable duplicates instead of deleting them.</li>
+        <li>Use only the allowed states: New, Open, In Progress, Fixed, Retest, Closed, Reopened, Deferred, or Rejected.</li>
+        <li>Compute age in days from the raised date to today; flag defects open beyond the stated SLA.</li>
+        <li>Use the defined severity scale (Critical / High / Medium / Low) and priority scale (P1 / P2 / P3 / P4).</li>
+        <li>Sort the main register by severity, then age descending. Group summary counts by severity and by module.</li>
+      </ul>
+    </section>
+
+    <section id="prompt">
+      <h2>Prompt template</h2>
+      <p>Copy this prompt and provide the defect log, reporting window, build, and owner information. Keep the fixed columns and allowed states consistent.</p>
+      <pre><code>### C — Context
+I maintain the defect log for [PROJECT / RELEASE]. Defects arrive from several
+testers and are tracked in [JIRA / AZURE DEVOPS / SHEET].
+- Reporting period: [START DATE → END DATE]
+- Release / build under test: [BUILD ID]
+- Defects supplied: [PASTE DEFECT LIST OR TABLE]
+- Team roster / owners: [NAMES OR ROLES]
+
+### R — Role
+Act as the QA lead accountable for defect hygiene: nothing untracked, nothing
+duplicated, nothing ageing silently.
+
+### I — Instructions
+1. Normalise every defect into one row using the fixed column set below.
+2. Preserve any supplied defect IDs exactly. Never renumber them.
+3. Detect probable duplicates and link them instead of deleting them.
+4. Assign state using only: New / Open / In Progress / Fixed / Retest / Closed / Reopened / Deferred / Rejected.
+5. Compute age in days from raised date to today.
+6. Flag every defect open beyond [SLA DAYS] as ageing.
+7. Group defects by severity and by module for the summary.
+8. Identify defects missing a mandatory field and list them separately.
+
+Do NOT:
+- Change a supplied severity without stating the change and the reason.
+- Close or mark Fixed a defect without supplied evidence.
+- Invent missing dates, owners, or build numbers.
+
+### S — Style
+Tabular and terse. One row per defect. No narrative inside cells beyond the
+summary fields.
+
+### P — Parameters
+- One row per defect, no merging of distinct issues.
+- Missing values: "Not supplied."
+- Ageing threshold: [SLA DAYS, default 5].
+- Severity: Critical / High / Medium / Low. Priority: P1 / P2 / P3 / P4.
+- Sort the main table by severity, then by age descending.</code></pre>
+    </section>
+
+    <section id="example">
+      <h2>Filled example</h2>
+      <p>The excerpt shows a defect register row with state, ownership, raised date, computed age, ageing flag, and duplicate or blocker reference.</p>
+      <pre><code>### I — Instructions (output excerpt)
+| DEF-101 | Login | Submit with blank password is accepted | Critical | P1 | Open | A. Sharma | 2026-11-13 | 2 | No | — |
+| DEF-102 | Login | Password field accepts 3-character value | Medium | P3 | Retest | R. Iyer | 2026-11-11 | 4 | No | Blocks on GAP-05 |
+| DEF-103 | Dashboard | Widget count label shows stale value | Low | P4 | Fixed | A. Sharma | 2026-11-05 | 10 | Yes | Duplicate of DEF-089 |</code></pre>
+    </section>
+
+    <section id="contract">
+      <h2>Output contract</h2>
+      <p>The tracking report must include all five sections:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">Required</th><th scope="col">Shape</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Defect Register</td><td>Yes</td><td>ID | Module | Summary | Severity | Priority | State | Owner | Raised Date | Age (days) | Ageing | Linked Duplicate</td></tr>
+            <tr><td>Summary by Severity</td><td>Yes</td><td>Severity | Open | Closed | Total</td></tr>
+            <tr><td>Summary by Module</td><td>Yes</td><td>Module | Open | Closed | Total</td></tr>
+            <tr><td>Ageing Defects</td><td>Yes (or “None”)</td><td>ID | Module | Severity | Age | Days Over SLA | Owner</td></tr>
+            <tr><td>Data Quality Gaps</td><td>Yes (or “None”)</td><td>ID | Missing Field | Impact</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Supplied IDs must remain unchanged.</li>
+        <li>No defect may be marked Closed without evidence.</li>
+        <li>Duplicate links must be bidirectional.</li>
+      </ul>
+    </section>
+
+    <section id="self-check">
+      <h2>Self-check</h2>
+      <p>Before sharing the tracking report, verify each item:</p>
+      <ul class="checklist">
+        <li>Every supplied defect appears exactly once in the register.</li>
+        <li>All states come from the allowed list.</li>
+        <li>Age is computed, not guessed, from the raised date.</li>
+        <li>Ageing flags use the stated SLA, consistently.</li>
+        <li>Duplicates are linked, not deleted.</li>
+        <li>Severity totals equal register row totals.</li>
+      </ul>
+    </section>
+
+    <section id="skill">
+      <h2>SKILL.md conversion</h2>
+      <p>To package this defect-tracking workflow as a skill, use the following metadata:</p>
+      <pre><code>---
+name: defect-tracking
+description: Normalise defects into a single tracking register with consistent states, computed age, ageing flags, duplicate links, severity and module summaries, and data-quality gaps. Use when maintaining a defect log across a test cycle.
+---</code></pre>
+      <h3>Trigger phrases</h3>
+      <p>“update the defect log”, “defect tracking report”, “which bugs are ageing”, “defect summary by severity”.</p>
+      <h3>Procedure for the skill body</h3>
+      <p>Ingest defects → normalise rows → dedupe/link → compute age → flag ageing → summarise by severity and module → list data gaps → self-check.</p>
+    </section>
+
+    <footer>
+      <strong>Alternative:</strong> If you need defect-to-requirement traceability rather than hygiene, use <code>06-rtm-RICEPOT.md</code>, which carries the defect column.
+    </footer>
+  </main>
+</body>
+</html>

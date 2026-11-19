@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical CLEAR user guide for recording evidence-backed test execution results.">
+  <title>04 — Test Case Execution | CLEAR User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2939;
+      --muted: #526174;
+      --accent: #145da0;
+      --accent-soft: #eaf3fb;
+      --line: #d7e0e9;
+      --surface: #fff;
+      --page: #f3f6fa;
+      --code: #17212f;
+      --code-ink: #edf4fb;
+      --warning: #fff8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(100% - 32px, 1040px);
+      margin: 36px auto;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgb(22 43 66 / 7%);
+    }
+
+    header { margin-bottom: 32px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin: 44px 0 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    h3 { margin: 24px 0 8px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .intro { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 22px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; }
+    .card strong { display: block; margin-bottom: 4px; }
+    .use { background: var(--accent-soft); }
+    .skip { background: var(--warning); }
+    nav { margin: 28px 0; padding: 18px 22px; background: #f8fafc; border-radius: 10px; }
+    nav strong { display: block; margin-bottom: 5px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; padding-left: 20px; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 22px;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: 10px;
+      font: .9rem/1.65 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code { font-family: "Cascadia Code", Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f2f6fa; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 5px 0; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "□"; margin-right: 10px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      nav { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      h2, h3 { break-after: avoid; }
+      pre, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">CLEAR · QA Prompt Guide</p>
+      <h1>04 — Test Case Execution</h1>
+      <p class="intro">Use this guide to create a defensible execution record for an existing test suite. Record statuses only from actual supplied evidence; never infer or assume a result.</p>
+      <div class="meta">
+        <div class="card use">
+          <strong>Use when</strong>
+          You are running existing test cases against a build and need an evidence-backed execution record.
+        </div>
+        <div class="card skip">
+          <strong>Skip when</strong>
+          Test cases do not exist yet. Use <code>02-test-case-design-RICEPOT.md</code>.
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="On this page">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#workflow">How to use</a></li>
+        <li><a href="#statuses">Status definitions</a></li>
+        <li><a href="#prompt">Prompt template</a></li>
+        <li><a href="#example">Filled example</a></li>
+        <li><a href="#contract">Output contract</a></li>
+        <li><a href="#self-check">Self-check</a></li>
+        <li><a href="#skill">Skill conversion</a></li>
+      </ul>
+    </nav>
+
+    <section id="workflow">
+      <h2>How to use this guide</h2>
+      <ol>
+        <li>Supply the existing test cases, their steps and expected results, the build and environment, and the execution window.</li>
+        <li>Provide actual observations and evidence for the steps that were run.</li>
+        <li>Copy the prompt below into your AI tool and fill in the context. Do not ask it to invent test results or defect IDs.</li>
+        <li>Review step-level and case-level statuses, blockers, failures, evidence references, and the summary arithmetic.</li>
+      </ol>
+      <p class="note"><strong>Important:</strong> If a step could not be executed, mark the case Blocked. A case cannot be Passed without evidence for every step.</p>
+    </section>
+
+    <section id="statuses">
+      <h2>Allowed statuses</h2>
+      <p>Use only these exact status values:</p>
+      <ul>
+        <li><strong>Passed</strong> — the observed result matches the expected result and evidence is supplied for every step.</li>
+        <li><strong>Failed</strong> — the actual observed result does not match the expected result.</li>
+        <li><strong>Blocked</strong> — a step could not be executed; state what blocked execution.</li>
+        <li><strong>Not Run</strong> — execution was not performed.</li>
+        <li><strong>Skipped</strong> — execution was intentionally skipped.</li>
+      </ul>
+      <p>When evidence for a step is missing, record <code>No evidence supplied.</code> Do not assign a defect ID unless one was provided.</p>
+    </section>
+
+    <section id="prompt">
+      <h2>Prompt template</h2>
+      <p>Copy this prompt and provide the test cases and execution evidence. Keep the limits in place to ensure results are traceable to what was actually executed.</p>
+      <pre><code>### C — Context
+I am executing the following test cases against a live build.
+- Product / module: [PRODUCT, MODULE]
+- Build / version: [BUILD ID]
+- Environment: [URL, BROWSER + VERSION, OS, DEVICE]
+- Execution window: [DATE-TIME START → END]
+- Test cases to execute: [PASTE CASE IDs AND STEPS]
+- Evidence captured: [SCREENSHOTS, LOGS, HAR, VIDEO — or "None"]
+
+### L — Limits
+- Use ONLY the supplied test cases. Do not add, rewrite, or "improve" them.
+- Record status only from actual evidence supplied. Never assume a result.
+- Allowed statuses, exactly: Passed / Failed / Blocked / Not Run / Skipped.
+- If a step could not be executed, the case is Blocked — not Passed.
+- If evidence is missing for a step, mark that step "No evidence supplied."
+- Do not assign defect IDs you were not given.
+
+### E — Examples
+| VWO-LOGIN-TC-001 | Step 1 | Open https://app.vwo.com/ | Login page loaded | Passed | Screenshot 01 |
+| VWO-LOGIN-TC-004 | Step 4 | Submit with blank password | Submit blocked with validation | Failed | Screenshot 04 — form submitted |
+| VWO-LOGIN-TC-007 | Step 2 | Enter locked-account credentials | Login rejected | Blocked | No locked test account available |
+
+### A — Action
+Produce an execution record for every supplied test case: per-step status,
+overall case status, observed result, evidence reference, and defect reference
+where a case failed.
+
+### R — Review
+Before returning, verify:
+- No case is Passed without evidence for every step.
+- Every Failed case has an observed actual result and a defect reference or an
+  explicit "Defect not yet raised."
+- Every Blocked case states what blocked it.
+- Overall status is consistent with the worst per-step status.</code></pre>
+    </section>
+
+    <section id="example">
+      <h2>Filled example</h2>
+      <p>This excerpt shows how execution details, test steps, observed outcomes, and evidence references can be recorded.</p>
+      <pre><code>### C — Context
+- Product / module: VWO — Login Dashboard
+- Build / version: 2026.11.15-rc1
+- Environment: Chrome 141 / Windows 11 / desktop
+- Execution window: 2026-11-15 09:10 → 10:25
+- Test cases: VWO-LOGIN-TC-001, TC-002, TC-004
+- Evidence: screenshots 01–06
+
+### A — Action (output excerpt)
+| TC ID | Step | Action | Expected | Status | Evidence |
+| VWO-LOGIN-TC-001 | 1 | Open login URL | Login page loads | Passed | 01.png |
+| VWO-LOGIN-TC-001 | 4 | Submit valid credentials | Dashboard opens | Passed | 02.png |
+| VWO-LOGIN-TC-004 | 4 | Submit blank password | Submission blocked with validation | Failed | 04.png — form submitted, no message |</code></pre>
+    </section>
+
+    <section id="contract">
+      <h2>Output contract</h2>
+      <p>The execution record must include all five sections:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">Required</th><th scope="col">Shape</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Execution Summary</td><td>Yes</td><td>Total / Passed / Failed / Blocked / Not Run / Skipped + pass rate</td></tr>
+            <tr><td>Step-Level Log</td><td>Yes</td><td>TC ID | Step | Action | Expected | Status | Evidence</td></tr>
+            <tr><td>Case-Level Result</td><td>Yes</td><td>TC ID | Overall Status | Observed Result | Defect Ref | Notes</td></tr>
+            <tr><td>Failures</td><td>Yes (or “None”)</td><td>TC ID | Step | Expected | Actual | Suggested Severity</td></tr>
+            <tr><td>Blockers</td><td>Yes (or “None”)</td><td>TC ID | What Blocked Execution | Owner To Unblock</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>No case may be Passed without evidence.</li>
+        <li>Do not invent defect IDs.</li>
+        <li>Summary counts must equal the corresponding table rows.</li>
+      </ul>
+    </section>
+
+    <section id="self-check">
+      <h2>Self-check</h2>
+      <p>Before returning the execution record, verify each item:</p>
+      <ul class="checklist">
+        <li>Every supplied test case appears exactly once in the case-level result.</li>
+        <li>Every Passed case has evidence against each of its steps.</li>
+        <li>Every Failed case has a concrete observed actual result.</li>
+        <li>Every Blocked case names the blocker and the owner who can unblock it.</li>
+        <li>No status outside the five allowed values is used.</li>
+        <li>Summary arithmetic matches the tables.</li>
+      </ul>
+    </section>
+
+    <section id="skill">
+      <h2>SKILL.md conversion</h2>
+      <p>To package this execution workflow as a skill, use the following metadata:</p>
+      <pre><code>---
+name: test-case-execution
+description: Produce an evidence-backed execution record — per-step log, case-level status, failures, and blockers — using only the supplied test cases and without inventing results. Use when running a test suite against a build.
+---</code></pre>
+      <h3>Trigger phrases</h3>
+      <p>“record execution results”, “log test run”, “execution report for this build”, “run these test cases and record status”.</p>
+      <h3>Procedure for the skill body</h3>
+      <p>Load cases → execute/record per step → roll up case status → list failures → list blockers → verify no unearned Passed → self-check.</p>
+    </section>
+
+    <footer>
+      <strong>Alternative:</strong> If a failed case needs to become a filed defect, hand the failure row to <code>03-bug-report-CRISP.md</code>.
+    </footer>
+  </main>
+</body>
+</html>

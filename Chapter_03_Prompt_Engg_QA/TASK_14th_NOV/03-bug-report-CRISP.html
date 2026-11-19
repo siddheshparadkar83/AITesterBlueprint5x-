@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical CRISP user guide for writing concise, reproducible bug reports with clear expected and actual results.">
+  <title>03 — Bug Report | CRISP User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2939;
+      --muted: #526174;
+      --accent: #145da0;
+      --accent-soft: #eaf3fb;
+      --line: #d7e0e9;
+      --surface: #fff;
+      --page: #f3f6fa;
+      --code: #17212f;
+      --code-ink: #edf4fb;
+      --warning: #fff8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(100% - 32px, 1040px);
+      margin: 36px auto;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgb(22 43 66 / 7%);
+    }
+
+    header { margin-bottom: 32px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin: 44px 0 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    h3 { margin: 24px 0 8px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .intro { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 22px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; }
+    .card strong { display: block; margin-bottom: 4px; }
+    .use { background: var(--accent-soft); }
+    .skip { background: var(--warning); }
+    nav { margin: 28px 0; padding: 18px 22px; background: #f8fafc; border-radius: 10px; }
+    nav strong { display: block; margin-bottom: 5px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; padding-left: 20px; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 22px;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: 10px;
+      font: .9rem/1.65 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code { font-family: "Cascadia Code", Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f2f6fa; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 5px 0; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "□"; margin-right: 10px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      nav { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      h2, h3 { break-after: avoid; }
+      pre, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">CRISP · QA Prompt Guide</p>
+      <h1>03 — Bug Report</h1>
+      <p class="intro">Use this guide to turn an observed defect into a concise, factual report that a developer can reproduce without needing clarification.</p>
+      <div class="meta">
+        <div class="card use">
+          <strong>Use when</strong>
+          You have observed a defect and need to document its environment, reproduction steps, and impact.
+        </div>
+        <div class="card skip">
+          <strong>Skip when</strong>
+          You are logging many defects at once. Use <code>05-defect-tracking-CRISP.md</code>.
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="On this page">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#workflow">How to use</a></li>
+        <li><a href="#prompt">Prompt template</a></li>
+        <li><a href="#example">Filled example</a></li>
+        <li><a href="#contract">Output contract</a></li>
+        <li><a href="#self-check">Self-check</a></li>
+        <li><a href="#skill">Skill conversion</a></li>
+      </ul>
+    </nav>
+
+    <section id="workflow">
+      <h2>How to use this guide</h2>
+      <ol>
+        <li>Record what you did and observed, along with the starting state, environment, reproducibility, and any evidence.</li>
+        <li>Identify the requirement the behavior appears to violate. If expected behavior is unclear, record the gap rather than guessing.</li>
+        <li>Copy the prompt below into your AI tool and fill in the context. Use placeholders for account identifiers and credentials.</li>
+        <li>Review the report to confirm that expected behavior is requirement-based and actual behavior is only what you observed.</li>
+      </ol>
+      <p class="note"><strong>Important:</strong> Report observed behavior, not a diagnosis. Do not claim a root cause or invent missing error messages, logs, or requirements.</p>
+    </section>
+
+    <section id="prompt">
+      <h2>Prompt template</h2>
+      <p>Copy this prompt and provide the available defect details. Use “Not supplied.” or “Not provided.” for missing fields as directed.</p>
+      <pre><code>### C — Context
+Assume I observed the following defect:
+- Product / module: [PRODUCT, MODULE]
+- Requirement being violated: [REQ ID + SHORT STATEMENT]
+- Starting state: [logged out / specific account / specific data]
+- Action performed: [EXACT STEPS I TOOK]
+- Observation: [WHAT I SAW]
+- Reproducibility: [N out of M attempts]
+- Environment: browser + version, OS, build/version, date-time — or "Not supplied"
+- Evidence: screenshots, video, console logs, network trace, HAR — or "Not provided"
+
+### R — Role
+Act as a senior QA engineer writing a clear, reproducible defect report for a
+developer who has never seen this issue.
+
+### I — Instructions
+1. Write a title in the form: [Area] — [Action] — [Observed problem]. Max 120 characters.
+2. State the environment. If a detail was not supplied, write "Not supplied."
+3. Describe preconditions precisely enough to recreate the starting state.
+4. Write reproduction steps numbered, one action per step, no compound actions.
+5. State the expected result, anchored to the violated requirement.
+6. State the actual result as pure observation — what appeared, what did not.
+7. Record reproducibility as N/M with attempts described.
+8. Propose a severity and a priority, each with a one-line rationale.
+9. Separate observed behaviour from anything you suspect.
+10. List attachments, or write "Not provided."
+
+Do NOT:
+- Invent the exact validation message, error code, or log entry.
+- Merge two defects into one report.
+- Assert root cause — you observed behaviour, you did not diagnose code.
+- State severity as final if the requirement is ambiguous; label it provisional.
+
+### S — Style
+Concise, factual, numbered. Present tense for observed behaviour. No adjectives
+like "bad", "broken", "weird". A developer should reproduce it in one read.
+
+### P — Parameters
+- Produce one bug report.
+- Maximum 500 words.
+- Use &lt;placeholders&gt; for all account identifiers and credentials.
+- Missing environment fields: "Not supplied." Missing evidence: "Not provided."
+- Severity scale: Critical / High / Medium / Low. Priority scale: P1 / P2 / P3 / P4.
+- If expected behaviour is not defined by a requirement, prefix with exactly:
+  "Insufficient information to determine." and name the gap.</code></pre>
+    </section>
+
+    <section id="example">
+      <h2>Filled example</h2>
+      <p>This example shows how to distinguish the requirement-based expected result from the observed actual result, while flagging unspecified validation details.</p>
+      <pre><code>### C — Context
+- Product / module: VWO — Login Dashboard
+- Requirement being violated: REQ-002 Email and password are mandatory
+- Starting state: User logged out
+- Action performed: Entered registered email, left password empty, submitted the form
+- Observation: Form submitted; no visible validation feedback appeared
+- Reproducibility: 3 out of 3 attempts
+- Environment: Not supplied
+- Evidence: Not provided
+
+### I — Instructions (output excerpt)
+**Title:** Login — Submit with empty password — No validation feedback shown
+
+**Expected Result:** Per REQ-002, password is mandatory; submission with an empty
+password should be rejected and the user should see validation feedback. Exact
+validation message: Insufficient information to determine. (GAP-02)
+
+**Actual Result:** The form submitted and no visible validation feedback was
+displayed anywhere on the page.
+
+**Severity:** High (provisional) — mandatory-field enforcement appears absent,
+allowing malformed submissions. Severity is provisional because the required
+validation behaviour is not fully specified.</code></pre>
+    </section>
+
+    <section id="contract">
+      <h2>Output contract</h2>
+      <p>Each report must include the following sections:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">Required</th><th scope="col">Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Title</td><td>Yes</td><td><code>[Area] — [Action] — [Problem]</code>, ≤120 characters</td></tr>
+            <tr><td>Environment</td><td>Yes</td><td>Use “Not supplied.” where unknown</td></tr>
+            <tr><td>Preconditions</td><td>Yes</td><td>Enough to recreate state</td></tr>
+            <tr><td>Test Data</td><td>Yes</td><td>Placeholders only</td></tr>
+            <tr><td>Steps to Reproduce</td><td>Yes</td><td>Numbered, atomic steps</td></tr>
+            <tr><td>Expected Result</td><td>Yes</td><td>Tied to a requirement ID</td></tr>
+            <tr><td>Actual Result</td><td>Yes</td><td>Observation only</td></tr>
+            <tr><td>Reproducibility</td><td>Yes</td><td><code>N/M</code></td></tr>
+            <tr><td>Severity + rationale</td><td>Yes</td><td>Mark provisional if requirement is unclear</td></tr>
+            <tr><td>Priority + rationale</td><td>Yes</td><td>Include a one-line rationale</td></tr>
+            <tr><td>Attachments</td><td>Yes</td><td>Or “Not provided.”</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="self-check">
+      <h2>Self-check</h2>
+      <p>Before filing the report, verify each item:</p>
+      <ul class="checklist">
+        <li>Title follows the three-part form and fits 120 characters.</li>
+        <li>Every step is a single action.</li>
+        <li>Expected result cites the requirement it comes from.</li>
+        <li>Actual result contains no diagnosis or root-cause claim.</li>
+        <li>Severity has a rationale and is marked provisional if the requirement is vague.</li>
+        <li>No real credentials, emails, or customer data appear.</li>
+        <li>Word count is under 500.</li>
+      </ul>
+    </section>
+
+    <section id="skill">
+      <h2>SKILL.md conversion</h2>
+      <p>To package this bug-report workflow as a skill, use the following metadata:</p>
+      <pre><code>---
+name: bug-report
+description: Write a concise, reproducible bug report with environment, numbered steps, expected vs actual, reproducibility, and provisional severity with rationale. Use when a defect has been observed and must be filed.
+---</code></pre>
+      <h3>Trigger phrases</h3>
+      <p>“write a bug report”, “log this defect”, “file a bug for this”, “create a Jira bug”.</p>
+      <h3>Procedure for the skill body</h3>
+      <p>Collect context → title → environment → preconditions → steps → expected → actual → reproducibility → severity/priority → attachments → self-check.</p>
+    </section>
+
+    <footer>
+      <strong>Alternative:</strong> If the defect must be tied to a PRD clause with full traceability, pair this with <code>01-requirement-analysis-RICEPOT.md</code> to generate the requirement IDs this report cites.
+    </footer>
+  </main>
+</body>
+</html>

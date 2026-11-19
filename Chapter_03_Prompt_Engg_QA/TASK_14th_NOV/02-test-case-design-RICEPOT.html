@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical RICE-POT user guide for creating executable, traceable test cases from approved requirements.">
+  <title>02 — Test Case Design | RICE-POT User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2939;
+      --muted: #526174;
+      --accent: #145da0;
+      --accent-soft: #eaf3fb;
+      --line: #d7e0e9;
+      --surface: #fff;
+      --page: #f3f6fa;
+      --code: #17212f;
+      --code-ink: #edf4fb;
+      --warning: #fff8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(100% - 32px, 1040px);
+      margin: 36px auto;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgb(22 43 66 / 7%);
+    }
+
+    header { margin-bottom: 32px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin: 44px 0 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    h3 { margin: 24px 0 8px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .intro { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 22px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; }
+    .card strong { display: block; margin-bottom: 4px; }
+    .use { background: var(--accent-soft); }
+    .skip { background: var(--warning); }
+    nav { margin: 28px 0; padding: 18px 22px; background: #f8fafc; border-radius: 10px; }
+    nav strong { display: block; margin-bottom: 5px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 0; padding-left: 20px; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 22px;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: 10px;
+      font: .9rem/1.65 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code { font-family: "Cascadia Code", Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f2f6fa; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 5px 0; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "□"; margin-right: 10px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      nav { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      h2, h3 { break-after: avoid; }
+      pre, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">RICE-POT · QA Prompt Guide</p>
+      <h1>02 — Test Case Design</h1>
+      <p class="intro">Use this guide to create executable, traceable test cases from an approved requirement set. Each case should be clear enough for a new team member to execute without needing clarification.</p>
+      <div class="meta">
+        <div class="card use">
+          <strong>Use when</strong>
+          Requirements are approved and you need test cases with an explicit coverage map.
+        </div>
+        <div class="card skip">
+          <strong>Skip when</strong>
+          Requirements are still ambiguous. Run <code>01-requirement-analysis-RICEPOT.md</code> first.
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="On this page">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#workflow">How to use</a></li>
+        <li><a href="#prompt">Prompt template</a></li>
+        <li><a href="#example">Filled example</a></li>
+        <li><a href="#contract">Output contract</a></li>
+        <li><a href="#self-check">Self-check</a></li>
+        <li><a href="#skill">Skill conversion</a></li>
+      </ul>
+    </nav>
+
+    <section id="workflow">
+      <h2>How to use this guide</h2>
+      <ol>
+        <li>Start with approved requirements. If they contain unresolved ambiguity, analyze them before designing cases.</li>
+        <li>Copy the prompt below into your AI tool and replace the bracketed fields with the product, module, requirements, existing cases, environment, and desired case count.</li>
+        <li>Supply existing test cases when available so duplicates can be avoided.</li>
+        <li>Review the coverage map, steps, expected results, and blocked-case register against the output contract and self-check.</li>
+      </ol>
+      <p class="note"><strong>Important:</strong> Cases are design artifacts, not execution results. Do not mark any case Passed or Failed until a tester has run it.</p>
+    </section>
+
+    <section id="prompt">
+      <h2>Prompt template</h2>
+      <p>Copy this prompt and provide the approved requirements and environment details. Use placeholders for credentials; never include real secrets.</p>
+      <pre><code>### R — Role
+You are a senior QA engineer who writes test cases a new team member could
+execute without asking a single question.
+
+### I — Instructions
+1. Use ONLY the supplied requirements. Treat them as the complete source of truth.
+2. Assign test case IDs in the form &lt;PROJECT&gt;-&lt;MODULE&gt;-TC-&lt;NNN&gt;, sequentially with no gaps.
+3. Cover, in this order: positive path, negative path, boundary, access control, data validation.
+4. Write numbered steps that a tester can follow literally, one action per step.
+5. Write expected results as observable behaviour, never as "should work correctly".
+6. Record the requirement each case verifies in a traceability column.
+7. Classify each case as Verified, Inference (low confidence), or Blocked.
+8. For any Blocked case, cite the GAP ID that blocks it.
+
+Do NOT:
+- Invent validation messages, password rules, session timeouts, or limits.
+- Merge two checks into one test case.
+- Mark any case Passed or Failed — execution has not happened.
+- Create cases for features the requirements do not mention.
+
+### C — Context
+- Product / module: [PRODUCT, MODULE]
+- Requirements supplied: [PASTE APPROVED REQUIREMENTS]
+- Existing test cases to avoid duplicating: [PASTE OR "None"]
+- Environment: [URL, BROWSER, BUILD]
+
+### E — Example
+| VWO-LOGIN-TC-001 | REQ-001 | Login with valid registered credentials | Registered account exists; user logged out | 1) Open the login URL. 2) Enter registered email. 3) Enter valid password. 4) Submit. | Authenticated dashboard opens | P1 | Positive | Verified |
+
+### P — Parameters
+- Output must be deterministic: same input, same output.
+- Every case must trace to exactly one supplied requirement.
+- If expected behaviour is unstated, write exactly: "Insufficient information to determine." and cite the GAP ID.
+- If you infer behaviour, prefix with exactly: "Inference (low confidence)".
+- Use placeholders &lt;registered_email&gt;, &lt;valid_password&gt;. Never write real credentials.
+- Keep exactly [N] test cases unless coverage truly requires more — then state why.
+
+### O — Output
+Return Markdown, in this order:
+1. **Coverage Map** — Requirement ID | Verifying Test Case IDs | Coverage (Covered / Partial / Not Covered)
+2. **Test Cases** — TC ID | Req ID | Summary | Precondition | Test Data | Steps | Expected Result | Priority | Type | Confidence
+3. **Blocked Cases** — TC ID | Blocking GAP ID | What Is Missing
+4. **Design Notes** — assumptions avoided, coverage gaps, cases deliberately excluded
+
+### T — Tone
+Instructional and unambiguous. Steps in imperative voice. No hedging language.</code></pre>
+    </section>
+
+    <section id="example">
+      <h2>Filled example</h2>
+      <p>The excerpts below show one verified positive case and one case blocked because the requirement source does not specify the expected validation behaviour.</p>
+      <pre><code>### O — Output (excerpt)
+| VWO-LOGIN-TC-001 | REQ-001 | Login with valid registered credentials | Registered account exists; user logged out | &lt;registered_email&gt;, &lt;valid_password&gt; | 1) Open https://app.vwo.com/. 2) Enter registered email. 3) Enter valid password. 4) Submit the form. | Authenticated dashboard opens | P1 | Positive | Verified |
+| VWO-LOGIN-TC-004 | REQ-002 | Submit with empty password | Account exists; user logged out | &lt;registered_email&gt;, (blank password) | 1) Open URL. 2) Enter email. 3) Leave password blank. 4) Submit. | Insufficient information to determine. (GAP-02: validation message and blocked-submit behaviour not specified.) | P1 | Negative | Blocked |</code></pre>
+    </section>
+
+    <section id="contract">
+      <h2>Output contract</h2>
+      <p>The generated design must include all four sections, in the specified order and shape.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">Required</th><th scope="col">Shape</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Coverage Map</td><td>Yes</td><td>Table, 3 columns, one row per requirement</td></tr>
+            <tr><td>Test Cases</td><td>Yes</td><td>Table, 10 columns, fixed order, unique sequential IDs</td></tr>
+            <tr><td>Blocked Cases</td><td>Yes (may be “None”)</td><td>Table, 3 columns</td></tr>
+            <tr><td>Design Notes</td><td>Yes</td><td>Short bullets</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>No case may exist without a <code>Req ID</code>.</li>
+        <li><code>Type</code> is limited to Positive, Negative, Boundary, Security, or Access Control.</li>
+        <li><code>Confidence</code> is limited to the three allowed values.</li>
+        <li><code>Priority</code> is limited to P1–P4.</li>
+      </ul>
+    </section>
+
+    <section id="self-check">
+      <h2>Self-check</h2>
+      <p>Before accepting the test design, verify each item:</p>
+      <ul class="checklist">
+        <li>Every requirement in the coverage map has at least one case or is marked Not Covered.</li>
+        <li>No two cases test the identical check.</li>
+        <li>Steps are literal—not phrased as “verify appropriate behaviour”.</li>
+        <li>Expected results describe something a tester can observe on screen or in a response.</li>
+        <li>No case is marked Passed or Failed.</li>
+        <li>All credentials are placeholders.</li>
+        <li>Blocked cases each cite a GAP ID and say what is missing.</li>
+      </ul>
+    </section>
+
+    <section id="skill">
+      <h2>SKILL.md conversion</h2>
+      <p>To package this test-design workflow as a skill, use the following metadata:</p>
+      <pre><code>---
+name: test-case-design
+description: Generate traceable, executable test cases from approved requirements, with a coverage map, blocked-case register, and anti-hallucination labels. Use when designing functional test cases for a module or ticket.
+---</code></pre>
+      <h3>Trigger phrases</h3>
+      <p>“write test cases for”, “design tests for this story”, “generate functional test cases”, “cover this requirement”.</p>
+      <h3>Procedure for the skill body</h3>
+      <p>Read requirements → coverage map → cases in positive/negative/boundary/access order → blocked register → design notes → self-check.</p>
+    </section>
+
+    <footer>
+      <strong>Alternative:</strong> If the module is endpoint-driven, use <code>12-ui-api-testing-CLEAR.md</code> so request/response assertions replace screen steps.
+    </footer>
+  </main>
+</body>
+</html>
