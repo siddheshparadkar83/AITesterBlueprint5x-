@@ -1,0 +1,36 @@
+:root { font-family: Arial, sans-serif; color: #111; background: #fff; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.page { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #fff; }
+.layout { width: min(920px, 92vw); display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.card, .nav-card { border: 3px solid #111; border-radius: 18px; background: #fff; }
+.main-card { min-height: 500px; padding: 24px 32px; text-align: center; }
+.nav-card { min-height: 500px; display: grid; place-items: start center; padding-top: 24px; }
+.nav-button { border: 0; background: transparent; font-size: 26px; cursor: pointer; }
+.output { height: 330px; margin: 18px 0 24px; overflow: auto; border: 3px solid #111; border-radius: 16px; padding: 20px; text-align: left; }
+.output article { font-size: 14px; line-height: 1.35; }
+.output article h2 { text-align: center; }
+.output article h3 { margin-top: 16px; }
+.output article p { margin: 6px 0; }
+.table-line { white-space: nowrap; overflow-x: auto; }
+form input { width: 64%; height: 54px; border: 2px solid #111; border-radius: 8px; text-align: center; font-size: 20px; }
+.error { color: #b00020; font-weight: bold; }
+.success { color: #176b35; font-weight: bold; }
+.settings-card { width: min(680px, 92vw); min-height: 620px; position: relative; padding: 24px 80px; text-align: center; }
+.settings-card h1 { margin: 8px 0 24px; }
+.back { position: absolute; left: 18px; top: 18px; border: 0; background: transparent; cursor: pointer; }
+.setting-box { border: 3px solid #111; border-radius: 16px; margin: 18px auto; padding: 18px; min-height: 150px; display: grid; gap: 8px; justify-items: center; }
+.setting-box strong { font-size: 24px; }
+.setting-box label { width: min(100%, 360px); display: grid; gap: 5px; text-align: left; }
+.setting-box label input { width: 100%; height: 38px; padding: 6px 9px; text-align: left; font-size: 14px; }
+.setting-box button { padding: 8px 14px; border: 2px solid #111; border-radius: 8px; background: #fff; cursor: pointer; }
+.env-upload { margin: 8px 0 16px; display: grid; justify-items: center; gap: 7px; }
+.env-upload label { font-weight: bold; }
+.env-upload small { color: #555; }
+.configured { color: #176b35; }
+.missing { color: #777; }
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; }
+  .nav-card { min-height: 80px; }
+  .settings-card { padding: 24px 28px; }
+}
