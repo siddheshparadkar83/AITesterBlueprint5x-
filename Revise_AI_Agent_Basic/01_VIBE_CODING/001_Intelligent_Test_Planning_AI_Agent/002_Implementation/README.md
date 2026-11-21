@@ -1,0 +1,46 @@
+# Jira Test Plan Generator
+
+Lightweight React and Express app that retrieves a Jira issue and generates a draft test plan.
+
+## Prerequisites
+
+- Node.js 18+
+- Jira Cloud credentials
+- Optional Groq API key
+
+## Setup
+
+```powershell
+cd 002_Implementation
+npm run install:all
+npm install
+```
+
+The backend searches parent directories for `.env` and reads `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_TOKEN`, and `GROQ_API_KEY`. No `config.md` was supplied, so the existing `.env` is the configuration source. The backend only sends credentials to their configured Jira or Groq service. No secret is exposed to the frontend.
+
+Example `.env` names only:
+
+```text
+JIRA_BASE_URL=https://example.atlassian.net/
+JIRA_EMAIL=qa@example.com
+JIRA_TOKEN=<jira-api-token>
+GROQ_API_KEY=<groq-api-key>
+```
+
+## Run
+
+```powershell
+npm run dev
+```
+
+Open `http://localhost:5173`. The API runs at `http://localhost:3001`.
+
+## Verification
+
+- Frontend and backend startup
+- Settings status without exposing secrets
+- Jira issue lookup with configured credentials
+- Groq generation when available
+- A Jira response is not reported as successful until the live API returns it
+
+Mock Jira and AI checks can be added separately; none are presented as live verification.
