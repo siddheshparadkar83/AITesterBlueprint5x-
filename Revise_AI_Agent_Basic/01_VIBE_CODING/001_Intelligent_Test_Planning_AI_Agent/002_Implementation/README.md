@@ -16,7 +16,7 @@ npm run install:all
 npm install
 ```
 
-The backend searches parent directories for `.env` and reads `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_TOKEN`, and `GROQ_API_KEY`. No `config.md` was supplied, so the existing `.env` is the configuration source. The backend only sends credentials to their configured Jira or Groq service. No secret is exposed to the frontend.
+At startup, the backend loads the first `.env` found while walking upward from `src/backend/config.js`; in this checkout, that is the repository-root `.env`. It reads `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_TOKEN`, and `GROQ_API_KEY` once, so restart the backend after changing them. Keep `.env` in the same checkout as the backend you run; a `.env` in another copy of this project is not used. No `config.md` was supplied, so the existing `.env` is the configuration source. The backend only sends credentials to their configured Jira or Groq service. No secret is exposed to the frontend.
 
 Example `.env` names only:
 
