@@ -24,7 +24,9 @@ export const config = {
     token: process.env.JIRA_TOKEN
   },
   groq: {
-    apiKey: process.env.GROQ_API_KEY
+    apiKey: process.env.GROQ_API_KEY?.trim(),
+    baseUrl: (process.env.GROQ_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/+$/, ""),
+    model: process.env.GROQ_MODEL || "openai/gpt-oss-20b"
   }
 };
 

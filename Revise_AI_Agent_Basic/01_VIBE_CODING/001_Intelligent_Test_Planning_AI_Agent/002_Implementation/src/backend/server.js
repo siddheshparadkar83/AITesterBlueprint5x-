@@ -25,6 +25,54 @@ function adfToText(value) {
   return "";
 }
 
+async function groqCompletion(messages) {
+  const response = await fetch(`${config.groq.baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.groq.apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: config.groq.model,
+      temperature: 0,
+      messages
+    })
+  });
+  const responseText = await response.text();
+  let body;
+  try {
+    body = JSON.parse(responseText);
+  } catch {
+    body = null;
+  }
+  if (!response.ok) {
+    const error = new Error(`Groq returned HTTP ${response.status}.`);
+    error.status = response.status;
+    error.code = body?.error?.code;
+    error.type = body?.error?.type;
+    throw error;
+  }
+  const content = body?.choices?.[0]?.message?.content;
+  if (typeof content !== "string" || !content.trim()) {
+    throw new Error("Groq returned an empty completion.");
+  }
+  return content;
+}
+
+function groqFailure(res, operation, error) {
+  console.error("[groq] request failed", {
+    operation,
+    status: error.status || null,
+    code: error.code || null,
+    type: error.type || null,
+    errorName: error.name || "Error"
+  });
+  const reason = error.status
+    ? `HTTP ${error.status}${error.code ? ` (${error.code})` : ""}`
+    : "network or response error";
+  return res.status(502).json({ error: `Groq ${operation} failed: ${reason}.` });
+}
+
 app.get("/api/settings", (_req, res) => {
   res.json({
     jiraConfigured: jiraConfigured(),
@@ -50,16 +98,10 @@ app.post("/api/settings/test-groq", async (_req, res) => {
     return res.status(400).json({ error: "Groq configuration is missing." });
   }
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/models", {
-      headers: {
-        Authorization: `Bearer ${config.groq.apiKey}`,
-        Accept: "application/json"
-      }
-    });
-    if (!response.ok) return res.status(response.status).json({ error: "Groq authentication failed." });
+    await groqCompletion([{ role: "user", content: "Reply with OK only." }]);
     res.json({ ok: true });
-  } catch {
-    res.status(502).json({ error: "Could not reach Groq." });
+  } catch (error) {
+    groqFailure(res, "connection test", error);
   }
 });
 
@@ -129,21 +171,11 @@ app.post("/api/test-plan", async (req, res) => {
 - **Open questions blocking sign-off:** …
 - **Approve, or edit, before I write test cases / automation.**`;
       const prompt = `Use only the source JSON and exact template structure below. Separate factual requirements from proposed testing activities. Label proposals as Proposal. Use exactly "Insufficient information to determine." for missing facts. Do not invent requirements or product behavior. Return Markdown only.\n\nSOURCE:\n${JSON.stringify(source)}\n\nTEMPLATE:\n${template}`;
-      const aiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${config.groq.apiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          temperature: 0,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-      if (!aiResponse.ok) return res.status(502).json({ error: "Test plan generation failed with Groq." });
-      const ai = await aiResponse.json();
-      plan = ai.choices?.[0]?.message?.content || "";
+      try {
+        plan = await groqCompletion([{ role: "user", content: prompt }]);
+      } catch (error) {
+        return groqFailure(res, "test plan generation", error);
+      }
     } else {
       plan = `# Test Plan — ${source.key}: ${source.summary || "Insufficient information to determine."}
 
@@ -191,8 +223,9 @@ Insufficient information to determine.
 - **Approve, or edit, before I write test cases / automation.**`;
     }
     res.json({ issue: source, plan });
-  } catch {
-    res.status(502).json({ error: "Jira request or test plan generation failed." });
+  } catch (error) {
+    console.error("[jira] issue lookup failed", { errorName: error.name || "Error" });
+    res.status(502).json({ error: "Jira request failed." });
   }
 });
 

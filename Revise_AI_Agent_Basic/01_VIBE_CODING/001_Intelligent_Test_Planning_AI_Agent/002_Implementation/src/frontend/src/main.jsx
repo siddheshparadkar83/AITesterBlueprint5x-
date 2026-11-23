@@ -2,6 +2,18 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
+async function readApiResponse(response) {
+  const body = await response.text();
+  if (!body.trim()) {
+    throw new Error(`The server returned an empty response (HTTP ${response.status}). Check the backend and try again.`);
+  }
+  try {
+    return JSON.parse(body);
+  } catch {
+    throw new Error(`The server returned an invalid response (HTTP ${response.status}). Check the backend logs.`);
+  }
+}
+
 function App() {
   const [page, setPage] = useState("main");
   const [issueId, setIssueId] = useState("");
@@ -28,7 +40,7 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ issueId })
       });
-      const data = await response.json();
+      const data = await readApiResponse(response);
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setPlan(data.plan);
       setStatus(`DRAFT — ${data.issue.key}`);
