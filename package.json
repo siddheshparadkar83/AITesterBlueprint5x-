@@ -1,0 +1,8 @@
+{
+  "name": "aitesterblueprint5x-workspace",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix ./Revise_AI_Agent_Basic/01_VIBE_CODING/001_Intelligent_Test_Planning_AI_Agent/002_Implementation run install:all",
+    "dev": "npm --prefix ./Revise_AI_Agent_Basic/01_VIBE_CODING/001_Intelligent_Test_Planning_AI_Agent/002_Implementation run dev"
+  }
+}
